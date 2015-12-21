@@ -1,0 +1,19 @@
+# DeltaWarps Configuration File
+
+# DeltaEssentials Database name
+Database: Main
+
+# Default limits on the number of warps for a group.
+# Example: Add the "DeltaWarps.Group.Example" permission
+#          to add a player to a group.
+GroupLimits:
+
+  # Name of the group
+  Example:
+    # Number of normal warps (public + private)
+    Normal: 2
+    # Number of faction warps
+    Faction: 0
+
+# Used for debugging DeltaWarps
+DebugMode: False

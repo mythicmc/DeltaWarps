@@ -1,0 +1,36 @@
+name: DeltaWarps
+main: com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin
+version: 1.0
+author: Trace Bachi (tracebachi@yahoo.com, BigBossZee)
+depend: [DeltaRedis, DeltaEssentials, Factions]
+commands:
+  warp:
+    description: Use a warp.
+  swarp:
+    description: Create a server warp (public, under the safezone faction).
+
+permissions:
+  DeltaWarps.Player.Use.Normal:
+    description: Allows the user to use non-faction warps.
+  DeltaWarps.Player.Use.Faction:
+    description: Allows the user to use faction warps.
+  DeltaWarps.Player.Add:
+    description: Allows the user to add warps.
+  DeltaWarps.Player.Remove:
+    description: Allows the user to remove warps.
+  DeltaWarps.Player.Move:
+    description: Allows the user to move warps.
+  DeltaWarps.Player.List:
+    description: Allows the user to list public warps.
+  DeltaWarps.Staff.Use:
+    description: Allows the user to use other players' warps.
+  DeltaWarps.Staff.Remove:
+    description: Allows the user to remove other players' warps.
+  DeltaWarps.Staff.Move:
+    description: Allows the user to move other players' warps.
+  DeltaWarps.Staff.Info:
+    description: Allows the user to see more details on other players' warps.
+  DeltaWarps.Staff.Give:
+    description: Allows the user to give players warps beyond their groups.
+  DeltaWarps.Staff.ServerWarp:
+    description: Allows the user to create server warps.
