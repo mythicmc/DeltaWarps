@@ -39,8 +39,6 @@ public class SWarpCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args)
     {
-        String warpName = args[0].toLowerCase();
-
         if(!(sender instanceof Player))
         {
             sender.sendMessage(Prefixes.FAILURE + "Only players can add warps.");
@@ -60,6 +58,7 @@ public class SWarpCommand implements CommandExecutor
             return true;
         }
 
+        String warpName = args[0].toLowerCase();
         if(warpName.length() >= 30)
         {
             player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
