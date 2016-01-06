@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,33 +62,16 @@ public class ListWarpsRunnable implements Runnable
                 statement.setInt(1, pageOffset * 50);
                 try(ResultSet resultSet = statement.executeQuery())
                 {
-                    int count = 0;
-                    String previous = null;
                     List<String> messages = new ArrayList<>(50);
-
-                    messages.add(Prefixes.INFO + "Warp list (Page " + Prefixes.input(pageOffset) + "): ");
+                    String header = Prefixes.INFO + "Warp list (Page " + Prefixes.input(pageOffset) + "): ";
 
                     while(resultSet.next())
                     {
-                        if(count % 2 == 0)
-                        {
-                            previous = resultSet.getString("name");
-                        }
-                        else
-                        {
-                            String name = resultSet.getString("name");
-                            messages.add(String.format("%-32s %-32s", previous, name));
-                            previous = null;
-                        }
-                        count++;
+                        String name = resultSet.getString("name");
+                        messages.add(name);
                     }
 
-                    if(previous != null)
-                    {
-                        messages.add(previous);
-                    }
-
-                    sendMessages(sender, messages);
+                    sendMessages(sender, Arrays.asList(header, String.join(", ", messages)));
                 }
             }
         }
