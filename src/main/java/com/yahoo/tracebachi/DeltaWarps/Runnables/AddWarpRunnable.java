@@ -16,8 +16,8 @@
  */
 package com.yahoo.tracebachi.DeltaWarps.Runnables;
 
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.yahoo.tracebachi.DeltaWarps.Storage.Warp;
 import com.yahoo.tracebachi.DeltaWarps.Storage.WarpType;

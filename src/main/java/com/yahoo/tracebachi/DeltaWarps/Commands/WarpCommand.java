@@ -16,8 +16,8 @@
  */
 package com.yahoo.tracebachi.DeltaWarps.Commands;
 
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.Storage.GroupLimits;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

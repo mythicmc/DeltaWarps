@@ -17,8 +17,8 @@
 package com.yahoo.tracebachi.DeltaWarps.Commands;
 
 import com.massivecraft.factions.entity.FactionColl;
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.Runnables.AddServerWarpRunnable;
 import com.yahoo.tracebachi.DeltaWarps.Storage.Warp;
 import com.yahoo.tracebachi.DeltaWarps.Storage.WarpType;

@@ -16,8 +16,8 @@
  */
 package com.yahoo.tracebachi.DeltaWarps.Commands;
 
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.Runnables.DeleteWarpRunnable;
 import org.bukkit.command.CommandSender;
 

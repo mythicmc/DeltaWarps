@@ -16,9 +16,10 @@
  */
 package com.yahoo.tracebachi.DeltaWarps.Commands;
 
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.Runnables.GetWarpForUseRunnable;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -43,29 +44,58 @@ public class UseCommand implements IWarpCommand
     @Override
     public void onCommand(CommandSender sender, String[] args)
     {
-        if(!(sender instanceof Player))
+        if(args.length == 1)
         {
-            sender.sendMessage(Prefixes.FAILURE + "Only players can use warps.");
-            return;
-        }
+            if(!(sender instanceof Player))
+            {
+                sender.sendMessage(Prefixes.FAILURE + "Only players can use warps.");
+                return;
+            }
 
-        Player player = (Player) sender;
-        if(args[0].length() >= 30)
+            Player player = (Player) sender;
+            if(args[0].length() >= 30)
+            {
+                player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
+                return;
+            }
+
+            boolean canUse = player.hasPermission("DeltaWarps.Player.Use.Normal");
+            boolean canUseFaction = player.hasPermission("DeltaWarps.Player.Use.Faction");
+
+            if(!canUse && !canUseFaction)
+            {
+                player.sendMessage(Prefixes.FAILURE + "You do not have permission to use any warps.");
+                return;
+            }
+
+            GetWarpForUseRunnable runnable = new GetWarpForUseRunnable(
+                player.getName(), player.getName(), args[0], plugin);
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        }
+        else
         {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
-            return;
+            if(!sender.hasPermission("DeltaWarps.Staff.ForceUse"))
+            {
+                sender.sendMessage(Prefixes.FAILURE + "You do not have permission to do that.");
+                return;
+            }
+
+            if(args[0].length() >= 30)
+            {
+                sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
+                return;
+            }
+
+            Player warper = Bukkit.getPlayer(args[1]);
+            if(warper == null || !warper.isOnline())
+            {
+                sender.sendMessage(Prefixes.FAILURE + Prefixes.input(args[1]) + " is not online.");
+                return;
+            }
+
+            GetWarpForUseRunnable runnable = new GetWarpForUseRunnable(
+                sender.getName(), warper.getName(), args[0], plugin);
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
         }
-
-        boolean canUse = player.hasPermission("DeltaWarps.Player.Use.Normal");
-        boolean canUseFaction = player.hasPermission("DeltaWarps.Player.Use.Faction");
-
-        if(!canUse && !canUseFaction)
-        {
-            player.sendMessage(Prefixes.FAILURE + "You do not have permission to use any warps.");
-            return;
-        }
-
-        GetWarpForUseRunnable runnable = new GetWarpForUseRunnable(player.getName(), args[0], plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 }

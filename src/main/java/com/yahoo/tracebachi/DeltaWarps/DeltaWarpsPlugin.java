@@ -142,10 +142,10 @@ public class DeltaWarpsPlugin extends JavaPlugin
         return dataSource.getConnection();
     }
 
-    public void useWarpSync(String sender, String warpOwner, Warp warp)
+    public void useWarpSync(String sender, String warper, String warpOwner, Warp warp)
     {
         Bukkit.getScheduler().runTask(this, new UseWarpRunnable(
-            deltaRedisApi, deltaEssentialsPlugin, sender, warpOwner, warp));
+            deltaRedisApi, deltaEssentialsPlugin, sender, warper, warpOwner, warp));
     }
 
     private boolean checkDatabase()

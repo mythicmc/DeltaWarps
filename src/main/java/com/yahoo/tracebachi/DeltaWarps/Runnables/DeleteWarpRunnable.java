@@ -16,8 +16,8 @@
  */
 package com.yahoo.tracebachi.DeltaWarps.Runnables;
 
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

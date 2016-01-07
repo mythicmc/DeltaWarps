@@ -22,8 +22,8 @@ import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
 import com.yahoo.tracebachi.DeltaEssentials.DeltaEssentialsPlugin;
 import com.yahoo.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.PlayerWarpEvent;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.Storage.Warp;
 import com.yahoo.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
@@ -40,15 +40,17 @@ public class UseWarpRunnable implements Runnable
     private final DeltaRedisApi deltaRedisApi;
     private final DeltaEssentialsPlugin deltaEssentialsPlugin;
     private final String sender;
+    private final String warper;
     private final String warpOwner;
     private final Warp warp;
 
     public UseWarpRunnable(DeltaRedisApi deltaRedisApi, DeltaEssentialsPlugin deltaEssentialsPlugin,
-        String sender, String warpOwner, Warp warp)
+        String sender, String warper, String warpOwner, Warp warp)
     {
         this.deltaRedisApi = deltaRedisApi;
-        this.deltaEssentialsPlugin =deltaEssentialsPlugin;
+        this.deltaEssentialsPlugin = deltaEssentialsPlugin;
         this.sender = sender;
+        this.warper = warper;
         this.warpOwner = warpOwner;
         this.warp = warp;
     }
@@ -56,14 +58,18 @@ public class UseWarpRunnable implements Runnable
     @Override
     public void run()
     {
-        Player player = Bukkit.getPlayer(sender);
+        boolean isForceWarpUse = !sender.equals(warper);
+
+        Player player = Bukkit.getPlayer(warper);
         if(player != null && player.isOnline())
         {
             String currentServerName = deltaRedisApi.getServerName();
-            boolean canUseOthers = player.hasPermission("DeltaWarps.Staff.Use");
-            boolean canUseNormal = player.hasPermission("DeltaWarps.Player.Use.Normal") || canUseOthers;
-            boolean canUseFaction = player.hasPermission("DeltaWarps.Player.Use.Faction") || canUseOthers;
             boolean isOwner = player.getName().equalsIgnoreCase(warpOwner);
+            boolean canUseOthers = player.hasPermission("DeltaWarps.Staff.Use");
+            boolean canUseNormal = player.hasPermission("DeltaWarps.Player.Use.Normal") ||
+                canUseOthers || isForceWarpUse;
+            boolean canUseFaction = player.hasPermission("DeltaWarps.Player.Use.Faction") ||
+                canUseOthers || isForceWarpUse;
 
             if(warp.getServer().equals(currentServerName))
             {
@@ -72,6 +78,26 @@ public class UseWarpRunnable implements Runnable
             else
             {
                 onDifferentServerWarp(player, isOwner, canUseNormal, canUseOthers);
+            }
+        }
+        else
+        {
+            if(isForceWarpUse)
+            {
+                if(sender.equals("CONSOLE"))
+                {
+                    Bukkit.getConsoleSender().sendMessage(Prefixes.FAILURE + Prefixes.input(warper) +
+                        " is no longer online.");
+                }
+                else
+                {
+                    Player senderPlayer = Bukkit.getPlayer(sender);
+                    if(senderPlayer != null && senderPlayer.isOnline())
+                    {
+                        senderPlayer.sendMessage(Prefixes.FAILURE + Prefixes.input(warper) +
+                            " is no longer online.");
+                    }
+                }
             }
         }
     }

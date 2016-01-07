@@ -16,8 +16,8 @@
  */
 package com.yahoo.tracebachi.DeltaWarps.Runnables;
 
+import com.yahoo.tracebachi.DeltaRedis.Spigot.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.DeltaWarpsPlugin;
-import com.yahoo.tracebachi.DeltaWarps.Prefixes;
 import com.yahoo.tracebachi.DeltaWarps.Storage.Warp;
 import com.yahoo.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
@@ -41,12 +41,14 @@ public class GetWarpForUseRunnable implements Runnable
         " WHERE deltawarps_warps.name = ?;";
 
     private final String sender;
+    private final String warper;
     private final String warpName;
     private final DeltaWarpsPlugin plugin;
 
-    public GetWarpForUseRunnable(String sender, String warpName, DeltaWarpsPlugin plugin)
+    public GetWarpForUseRunnable(String sender, String warper, String warpName, DeltaWarpsPlugin plugin)
     {
         this.sender = sender.toLowerCase();
+        this.warper = warper;
         this.warpName = warpName.toLowerCase();
         this.plugin = plugin;
     }
@@ -66,7 +68,7 @@ public class GetWarpForUseRunnable implements Runnable
                         String warpOwner = resultSet.getString("deltawarps_players.name");
                         Warp warp = getWarpFromResultSet(resultSet);
 
-                        plugin.useWarpSync(sender, warpOwner, warp);
+                        plugin.useWarpSync(sender, warper, warpOwner, warp);
                     }
                     else
                     {
