@@ -87,23 +87,31 @@ public class GetPlayerWarpsRunnable implements Runnable
                             messages.add(Prefixes.INFO +
                                 Prefixes.input(name) + " on " +
                                 Prefixes.input(server) + ", " +
-                                Prefixes.input(type));
+                                Prefixes.input(type.toString().toLowerCase()));
                         }
                         else
                         {
                             messages.add(Prefixes.INFO +
                                 Prefixes.input(name) + " on " +
                                 Prefixes.input(server) + ", " +
-                                Prefixes.input(type));
+                                Prefixes.input(type.toString().toLowerCase()));
                         }
                     }
 
-                    messages.add(1, Prefixes.INFO + "Normal: " +
-                        Prefixes.input(groupLimits.getNormal()) + " + " +
-                        Prefixes.input(normal));
-                    messages.add(2, Prefixes.INFO + "Faction: " +
-                        Prefixes.input(groupLimits.getFaction()) + " + " +
-                        Prefixes.input(faction));
+                    if(sender.equals(player))
+                    {
+                        messages.add(1, Prefixes.INFO + "Normal (" +
+                            Prefixes.input(groupLimits.getNormal()) + " + " +
+                            Prefixes.input(normal) + "), Faction (" +
+                            Prefixes.input(groupLimits.getFaction()) + " + " +
+                            Prefixes.input(faction) + ")");
+                    }
+                    else
+                    {
+                        messages.add(1, Prefixes.INFO + "Normal (+" +
+                            Prefixes.input(normal) + "), Faction (+" +
+                            Prefixes.input(faction) + ")");
+                    }
 
                     sendMessages(sender, messages);
                 }

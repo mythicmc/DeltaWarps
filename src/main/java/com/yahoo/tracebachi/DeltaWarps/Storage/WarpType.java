@@ -23,7 +23,8 @@ public enum WarpType
 {
     PUBLIC,
     FACTION,
-    PRIVATE;
+    PRIVATE,
+    UNKNOWN;
 
     public static WarpType fromString(String type)
     {
@@ -36,7 +37,7 @@ public enum WarpType
             case "private":
                 return PRIVATE;
             default:
-                return null;
+                return UNKNOWN;
         }
     }
 }
