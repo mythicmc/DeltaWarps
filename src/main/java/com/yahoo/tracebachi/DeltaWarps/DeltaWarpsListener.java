@@ -42,11 +42,13 @@ public class DeltaWarpsListener implements Listener
     private static final String WARP_CHANNEL = "DW-Warp";
     private static final Pattern PATTERN = Pattern.compile("/\\\\");
 
+    private final String serverName;
     private HashMap<String, WarpRequest> warpRequests = new HashMap<>();
     private DeltaWarpsPlugin plugin;
 
-    public DeltaWarpsListener(DeltaWarpsPlugin plugin)
+    public DeltaWarpsListener(String serverName, DeltaWarpsPlugin plugin)
     {
+        this.serverName = serverName;
         this.plugin = plugin;
     }
 
@@ -104,7 +106,7 @@ public class DeltaWarpsListener implements Listener
             MPlayer mPlayer = event.getMPlayer();
 
             FactionWarpsToPrivateRunnable runnable = new FactionWarpsToPrivateRunnable(
-                mPlayer.getName(), plugin);
+                mPlayer.getName(), serverName, plugin);
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
         }
     }

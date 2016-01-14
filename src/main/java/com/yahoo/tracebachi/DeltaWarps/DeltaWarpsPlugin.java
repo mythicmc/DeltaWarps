@@ -98,7 +98,7 @@ public class DeltaWarpsPlugin extends JavaPlugin
             sWarpCommand = new SWarpCommand(deltaRedisApi.getServerName(), this);
             getCommand("swarp").setExecutor(sWarpCommand);
 
-            warpsListener = new DeltaWarpsListener(this);
+            warpsListener = new DeltaWarpsListener(deltaRedisApi.getServerName(), this);
             getServer().getPluginManager().registerEvents(warpsListener, this);
 
             getServer().getScheduler().runTaskTimer(this, () -> warpsListener.cleanup(), 40, 40);

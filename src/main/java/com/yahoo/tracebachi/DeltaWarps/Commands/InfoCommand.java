@@ -16,6 +16,7 @@
  */
 package com.yahoo.tracebachi.DeltaWarps.Commands;
 
+import com.google.common.base.Preconditions;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
@@ -83,7 +84,18 @@ public class InfoCommand implements IWarpCommand
                 if(args.length >= 3)
                 {
                     String factionName = args[2];
-                    getFactionWarps(sender, factionName);
+                    Faction faction = FactionColl.get().getByName(factionName);
+
+                    if(faction != null)
+                    {
+                        getFactionWarps(sender, faction);
+                    }
+                    else
+                    {
+                        sender.sendMessage(Prefixes.FAILURE + "Faction " +
+                            ChatColor.WHITE + factionName +
+                            ChatColor.GRAY + " does not exist on this server.");
+                    }
                 }
                 else
                 {
@@ -92,9 +104,27 @@ public class InfoCommand implements IWarpCommand
             }
             else
             {
-                MPlayer mPlayer = MPlayer.get(sender);
-                String factionName = (args.length >= 3) ? args[2] : mPlayer.getFactionId();
-                getFactionWarps(sender, factionName);
+                if(args.length >= 3)
+                {
+                    String factionName = args[2];
+                    Faction faction = FactionColl.get().getByName(factionName);
+
+                    if(faction != null)
+                    {
+                        getFactionWarps(sender, faction);
+                    }
+                    else
+                    {
+                        sender.sendMessage(Prefixes.FAILURE + "Faction " +
+                            ChatColor.WHITE + factionName +
+                            ChatColor.GRAY + " does not exist on this server.");
+                    }
+                }
+                else
+                {
+                    MPlayer mPlayer = MPlayer.get(sender);
+                    getFactionWarps(sender, mPlayer.getFaction());
+                }
             }
         }
         else
@@ -117,22 +147,13 @@ public class InfoCommand implements IWarpCommand
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
-    private void getFactionWarps(CommandSender sender, String factionName)
+    private void getFactionWarps(CommandSender sender, Faction faction)
     {
-        Faction faction = FactionColl.get().getByName(factionName);
+        Preconditions.checkNotNull(faction, "Faction cannot be null.");
 
-        if(faction == null)
-        {
-            sender.sendMessage(Prefixes.FAILURE + "Faction " +
-                ChatColor.WHITE + factionName +
-                ChatColor.GRAY + " does not exist on this server.");
-        }
-        else
-        {
-            GetFactionWarpsRunnable runnable = new GetFactionWarpsRunnable(
-                sender.getName(), factionName, faction.getId(), serverName, plugin);
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
-        }
+        GetFactionWarpsRunnable runnable = new GetFactionWarpsRunnable(
+            sender.getName(), faction.getName(), faction.getId(), serverName, plugin);
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
     private GroupLimits getGroupLimitsForSender(CommandSender sender)

@@ -38,14 +38,16 @@ public class FactionWarpsToPrivateRunnable implements Runnable
     private static final String UPDATE_WARPS =
         " UPDATE deltawarps_warps" +
         " SET type = 'PRIVATE', faction = NULL" +
-        " WHERE owner_id = ?;";
+        " WHERE owner_id = ? AND server = ?;";
 
     private final String playerName;
+    private final String serverName;
     private final DeltaWarpsPlugin plugin;
 
-    public FactionWarpsToPrivateRunnable(String playerName, DeltaWarpsPlugin plugin)
+    public FactionWarpsToPrivateRunnable(String playerName, String serverName, DeltaWarpsPlugin plugin)
     {
         this.playerName = playerName.toLowerCase();
+        this.serverName = serverName;
         this.plugin = plugin;
     }
 
@@ -92,6 +94,7 @@ public class FactionWarpsToPrivateRunnable implements Runnable
         try(PreparedStatement statement = connection.prepareStatement(UPDATE_WARPS))
         {
             statement.setInt(1, playerId);
+            statement.setString(2, serverName);
             return statement.executeUpdate();
         }
     }
