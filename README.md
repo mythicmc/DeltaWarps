@@ -1,14 +1,12 @@
 # DeltaWarps
-DeltaWarps is cross-server warping plugin for Bukkit/Spigot servers. In order 
-to use DeltaWarps, `DeltaRedis`, `DeltaEssentials`, and `Factions` should be installed.
- 
-DeltaWarps uses MySQL to store warp information and DeltaEssential's database 
-support for connecting.
+DeltaWarps is cross-server warping plugin for Spigot servers. In order to use DeltaWarps, 
+`DeltaRedis`, `DeltaEssentials`, `DbShare`, and `Factions` must be installed. DeltaWarps uses
+MySQL to store warps and DbShare for connections to the database.
 
 # Licence ([GPLv3](http://www.gnu.org/licenses/gpl-3.0.en.html))
 ```
-DeltaWarps - Cross-server warping plugin for Bukkit/Spigot servers.
-Copyright (C) 2015  Trace Bachi (tracebachi@yahoo.com)
+DeltaWarps - Cross-server warping plugin for Spigot servers.
+Copyright (C) 2015  Trace Bachi (tracebachi@gmail.com)
 
 DeltaWarps is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

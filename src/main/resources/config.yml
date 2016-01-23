@@ -1,6 +1,6 @@
 # DeltaWarps Configuration File
 
-# DeltaEssentials Database name
+# DbShare Database name
 Database: Main
 
 # Default limits on the number of warps for a group.
