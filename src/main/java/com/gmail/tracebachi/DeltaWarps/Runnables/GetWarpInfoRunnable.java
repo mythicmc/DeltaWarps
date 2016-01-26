@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -41,9 +41,9 @@ public class GetWarpInfoRunnable implements Runnable
     private final String sender;
     private final String warpName;
     private final boolean canSeeCoords;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
-    public GetWarpInfoRunnable(String sender, String warpName, boolean canSeeCoords, DeltaWarpsPlugin plugin)
+    public GetWarpInfoRunnable(String sender, String warpName, boolean canSeeCoords, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.warpName = warpName.toLowerCase();

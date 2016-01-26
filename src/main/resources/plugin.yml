@@ -1,6 +1,6 @@
 name: DeltaWarps
-main: com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin
-version: 1.1
+main: com.gmail.tracebachi.DeltaWarps.DeltaWarps
+version: 1.2
 author: Trace Bachi (tracebachi@gmail.com, BigBossZee)
 depend: [DeltaRedis, DeltaEssentials, DbShare, Factions]
 commands:

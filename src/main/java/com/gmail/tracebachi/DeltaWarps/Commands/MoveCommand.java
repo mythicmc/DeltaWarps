@@ -20,8 +20,8 @@ import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.MoveWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.command.CommandSender;
@@ -33,9 +33,9 @@ import org.bukkit.entity.Player;
 public class MoveCommand implements IWarpCommand
 {
     private final String serverName;
-    private DeltaWarpsPlugin plugin;
+    private DeltaWarps plugin;
 
-    public MoveCommand(String serverName, DeltaWarpsPlugin plugin)
+    public MoveCommand(String serverName, DeltaWarps plugin)
     {
         this.serverName = serverName;
         this.plugin = plugin;

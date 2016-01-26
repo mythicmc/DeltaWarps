@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GiveWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.ChatColor;
@@ -28,9 +28,9 @@ import org.bukkit.command.CommandSender;
  */
 public class GiveCommand implements IWarpCommand
 {
-    private DeltaWarpsPlugin plugin;
+    private DeltaWarps plugin;
 
-    public GiveCommand(DeltaWarpsPlugin plugin)
+    public GiveCommand(DeltaWarps plugin)
     {
         this.plugin = plugin;
     }

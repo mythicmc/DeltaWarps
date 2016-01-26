@@ -16,11 +16,11 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddServerWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.massivecraft.factions.entity.FactionColl;
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -33,9 +33,9 @@ import org.bukkit.entity.Player;
 public class SWarpCommand implements CommandExecutor
 {
     private final String serverName;
-    private DeltaWarpsPlugin plugin;
+    private DeltaWarps plugin;
 
-    public SWarpCommand(String serverName, DeltaWarpsPlugin plugin)
+    public SWarpCommand(String serverName, DeltaWarps plugin)
     {
         this.serverName = serverName;
         this.plugin = plugin;

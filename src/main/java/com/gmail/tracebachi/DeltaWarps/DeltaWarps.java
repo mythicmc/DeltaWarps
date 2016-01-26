@@ -32,7 +32,7 @@ import java.sql.*;
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
-public class DeltaWarpsPlugin extends JavaPlugin
+public class DeltaWarps extends JavaPlugin
 {
     private static final String CREATE_PLAYER_TABLE =
         " CREATE TABLE IF NOT EXISTS deltawarps_players (" +

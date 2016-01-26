@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -24,11 +25,9 @@ import java.util.HashSet;
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
  */
-public interface IWarpCommand
+public interface IWarpCommand extends Shutdownable
 {
     HashSet<String> reserved = new HashSet<>(Arrays.asList("add", "give", "info", "list", "move", "remove"));
 
     void onCommand(CommandSender sender, String[] args);
-
-    void shutdown();
 }

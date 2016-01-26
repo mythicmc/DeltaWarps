@@ -44,9 +44,9 @@ public class DeltaWarpsListener implements Listener
 
     private final String serverName;
     private HashMap<String, WarpRequest> warpRequests = new HashMap<>();
-    private DeltaWarpsPlugin plugin;
+    private DeltaWarps plugin;
 
-    public DeltaWarpsListener(String serverName, DeltaWarpsPlugin plugin)
+    public DeltaWarpsListener(String serverName, DeltaWarps plugin)
     {
         this.serverName = serverName;
         this.plugin = plugin;

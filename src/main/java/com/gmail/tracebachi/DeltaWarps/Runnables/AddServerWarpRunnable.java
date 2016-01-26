@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -38,9 +38,9 @@ public class AddServerWarpRunnable implements Runnable
 
     private final String sender;
     private final Warp warp;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
-    public AddServerWarpRunnable(String sender, Warp warp, DeltaWarpsPlugin plugin)
+    public AddServerWarpRunnable(String sender, Warp warp, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.warp = warp;

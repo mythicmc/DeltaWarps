@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetFactionWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetWarpInfoRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
@@ -40,9 +40,9 @@ public class InfoCommand implements IWarpCommand
 {
     private final String serverName;
     private HashMap<String, GroupLimits> groupLimits;
-    private DeltaWarpsPlugin plugin;
+    private DeltaWarps plugin;
 
-    public InfoCommand(String serverName, HashMap<String, GroupLimits> groupLimits, DeltaWarpsPlugin plugin)
+    public InfoCommand(String serverName, HashMap<String, GroupLimits> groupLimits, DeltaWarps plugin)
     {
         this.serverName = serverName;
         this.groupLimits = groupLimits;

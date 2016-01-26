@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -43,9 +43,9 @@ public class ListWarpsRunnable implements Runnable
 
     private final String sender;
     private final int pageOffset;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
-    public ListWarpsRunnable(String sender, int pageOffset, DeltaWarpsPlugin plugin)
+    public ListWarpsRunnable(String sender, int pageOffset, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.pageOffset = pageOffset;

@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetWarpForUseRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -28,9 +28,9 @@ import org.bukkit.entity.Player;
  */
 public class UseCommand implements IWarpCommand
 {
-    private DeltaWarpsPlugin plugin;
+    private DeltaWarps plugin;
 
-    public UseCommand(DeltaWarpsPlugin plugin)
+    public UseCommand(DeltaWarps plugin)
     {
         this.plugin = plugin;
     }

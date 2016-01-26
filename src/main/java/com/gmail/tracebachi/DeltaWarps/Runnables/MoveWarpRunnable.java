@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.Bukkit;
@@ -50,11 +50,11 @@ public class MoveWarpRunnable implements Runnable
     private final String factionIdAtPos;
     private final Warp warp;
     private final boolean ignoreOwner;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
 
     public MoveWarpRunnable(String sender, String playerFactionId, String factionAtPosId,
-        Warp warp, boolean ignoreOwner, DeltaWarpsPlugin plugin)
+        Warp warp, boolean ignoreOwner, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.playerFactionId = playerFactionId;

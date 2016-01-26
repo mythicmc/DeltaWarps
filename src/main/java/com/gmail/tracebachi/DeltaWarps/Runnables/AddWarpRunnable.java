@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
@@ -58,7 +58,7 @@ public class AddWarpRunnable implements Runnable
     private final String sender;
     private final Warp warp;
     private final GroupLimits groupLimits;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
     private Integer ownerId;
     private short extraNormal = 0;
@@ -66,7 +66,7 @@ public class AddWarpRunnable implements Runnable
     private short extraFaction = 0;
     private short factionCount = 0;
 
-    public AddWarpRunnable(String sender, Warp warp, GroupLimits groupLimits, DeltaWarpsPlugin plugin)
+    public AddWarpRunnable(String sender, Warp warp, GroupLimits groupLimits, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.warp = warp;

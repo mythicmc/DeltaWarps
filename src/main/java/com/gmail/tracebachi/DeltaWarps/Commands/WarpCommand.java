@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -40,7 +40,7 @@ public class WarpCommand implements CommandExecutor
     private ListCommand listCommand;
     private GiveCommand giveCommand;
 
-    public WarpCommand(String serverName, DeltaWarpsPlugin plugin)
+    public WarpCommand(String serverName, DeltaWarps plugin)
     {
         ConfigurationSection section = plugin.getConfig().getConfigurationSection("GroupLimits");
         for(String groupName : section.getKeys(false))

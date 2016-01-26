@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteWarpRunnable;
 import org.bukkit.command.CommandSender;
 
@@ -26,9 +26,9 @@ import org.bukkit.command.CommandSender;
  */
 public class RemoveCommand implements IWarpCommand
 {
-    private DeltaWarpsPlugin plugin;
+    private DeltaWarps plugin;
 
-    public RemoveCommand(DeltaWarpsPlugin plugin)
+    public RemoveCommand(DeltaWarps plugin)
     {
         this.plugin = plugin;
     }

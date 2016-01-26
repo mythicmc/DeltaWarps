@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -45,9 +45,9 @@ public class DeleteWarpRunnable implements Runnable
     private final String sender;
     private final String warpName;
     private final boolean ignoreOwner;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
-    public DeleteWarpRunnable(String sender, String warpName, boolean ignoreOwner, DeltaWarpsPlugin plugin)
+    public DeleteWarpRunnable(String sender, String warpName, boolean ignoreOwner, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.warpName = warpName.toLowerCase();

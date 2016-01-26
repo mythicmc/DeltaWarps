@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -44,10 +44,10 @@ public class GetFactionWarpsRunnable implements Runnable
     private final String factionName;
     private final String factionId;
     private final String serverName;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
     public GetFactionWarpsRunnable(String sender, String factionName, String factionId,
-        String serverName, DeltaWarpsPlugin plugin)
+        String serverName, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.factionName = factionName.toLowerCase();

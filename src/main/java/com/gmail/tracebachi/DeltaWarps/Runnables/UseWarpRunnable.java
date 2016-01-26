@@ -23,7 +23,7 @@ import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
 import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.PlayerWarpEvent;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.Bukkit;

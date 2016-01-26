@@ -16,8 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Spigot.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
@@ -46,10 +46,10 @@ public class GetPlayerWarpsRunnable implements Runnable
     private final String player;
     private final GroupLimits groupLimits;
     private final boolean canSeePrivateWarps;
-    private final DeltaWarpsPlugin plugin;
+    private final DeltaWarps plugin;
 
     public GetPlayerWarpsRunnable(String sender, String player, GroupLimits groupLimits,
-        boolean canSeePrivateWarps, DeltaWarpsPlugin plugin)
+        boolean canSeePrivateWarps, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.player = player.toLowerCase();
