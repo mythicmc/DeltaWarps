@@ -17,8 +17,8 @@
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
+import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,10 +34,10 @@ public class GiveWarpsRunnable implements Runnable
 {
     private static final String SELECT_PLAYER =
         " SELECT normal, faction" +
-        " FROM deltawarps_players" +
+        " FROM deltawarps_player" +
         " WHERE name = ?;";
     private static final String UPDATE_PLAYER =
-        " INSERT INTO deltawarps_players" +
+        " INSERT INTO deltawarps_player" +
         " (name, normal, faction)" +
         " VALUES(?, ?, ?)" +
         " ON DUPLICATE KEY UPDATE" +
@@ -70,6 +70,7 @@ public class GiveWarpsRunnable implements Runnable
             try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER))
             {
                 statement.setString(1, receiver);
+
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     if(resultSet.next())

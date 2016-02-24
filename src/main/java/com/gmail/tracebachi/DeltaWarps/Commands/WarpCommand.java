@@ -17,6 +17,8 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import org.bukkit.command.Command;
@@ -29,7 +31,7 @@ import java.util.HashMap;
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
-public class WarpCommand implements CommandExecutor
+public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
 {
     private HashMap<String, GroupLimits> groupLimits = new HashMap<>();
     private UseCommand useCommand;
@@ -39,10 +41,12 @@ public class WarpCommand implements CommandExecutor
     private InfoCommand infoCommand;
     private ListCommand listCommand;
     private GiveCommand giveCommand;
+    private DeltaWarps plugin;
 
     public WarpCommand(String serverName, DeltaWarps plugin)
     {
         ConfigurationSection section = plugin.getConfig().getConfigurationSection("GroupLimits");
+
         for(String groupName : section.getKeys(false))
         {
             int normalLimit = section.getInt(groupName + ".Normal", 0);
@@ -50,17 +54,32 @@ public class WarpCommand implements CommandExecutor
             groupLimits.put(groupName, new GroupLimits(normalLimit, factionLimit));
         }
 
+        this.plugin = plugin;
         this.useCommand = new UseCommand(plugin);
         this.addCommand = new AddCommand(serverName, groupLimits, plugin);
         this.removeCommand = new RemoveCommand(plugin);
         this.moveCommand = new MoveCommand(serverName, plugin);
-        this.infoCommand = new InfoCommand(serverName, groupLimits, plugin);
+        this.infoCommand = new InfoCommand(serverName, plugin);
         this.listCommand = new ListCommand(plugin);
         this.giveCommand = new GiveCommand(plugin);
     }
 
+    @Override
+    public void register()
+    {
+        plugin.getCommand("warp").setExecutor(this);
+    }
+
+    @Override
+    public void unregister()
+    {
+        plugin.getCommand("warp").setExecutor(null);
+    }
+
     public void shutdown()
     {
+        unregister();
+
         useCommand.shutdown();
         useCommand = null;
         addCommand.shutdown();
@@ -75,6 +94,7 @@ public class WarpCommand implements CommandExecutor
         listCommand = null;
         giveCommand.shutdown();
         giveCommand = null;
+        plugin = null;
 
         groupLimits.clear();
         groupLimits = null;

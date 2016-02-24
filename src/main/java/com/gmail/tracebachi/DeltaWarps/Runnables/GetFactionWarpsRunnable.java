@@ -34,11 +34,11 @@ import java.util.List;
 public class GetFactionWarpsRunnable implements Runnable
 {
     private static final String SELECT_FACTION_WARPS =
-        " SELECT deltawarps_warps.name, deltawarps_players.name" +
-        " FROM deltawarps_warps" +
-        " INNER JOIN deltawarps_players" +
-        " ON deltawarps_warps.owner_id = deltawarps_players.id" +
-        " WHERE deltawarps_warps.faction = ? AND server = ?;";
+        " SELECT deltawarps_warp.name, deltawarps_player.name" +
+        " FROM deltawarps_warp" +
+        " INNER JOIN deltawarps_player" +
+        " ON deltawarps_warp.ownerId = deltawarps_player.id" +
+        " WHERE deltawarps_warp.faction = ? AND server = ?;";
 
     private final String sender;
     private final String factionName;
@@ -74,8 +74,8 @@ public class GetFactionWarpsRunnable implements Runnable
 
                     while(resultSet.next())
                     {
-                        String warpName = resultSet.getString("deltawarps_warps.name");
-                        String owner = resultSet.getString("deltawarps_players.name");
+                        String warpName = resultSet.getString("deltawarps_warp.name");
+                        String owner = resultSet.getString("deltawarps_player.name");
 
                         messages.add(Prefixes.INFO + Prefixes.input(warpName) +
                             " owned by " + Prefixes.input(owner));

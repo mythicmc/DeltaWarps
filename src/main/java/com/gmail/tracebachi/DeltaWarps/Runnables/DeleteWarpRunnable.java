@@ -31,15 +31,15 @@ import java.sql.SQLException;
  */
 public class DeleteWarpRunnable implements Runnable
 {
-    private static final String SELECT_WARP =
-        " SELECT deltawarps_players.name" +
-        " FROM deltawarps_players" +
-        " INNER JOIN deltawarps_warps" +
-        " ON deltawarps_players.id = deltawarps_warps.owner_id" +
-        " WHERE deltawarps_warps.name = ?;";
+    private static final String SELECT_WARP_OWNER =
+        " SELECT deltawarps_player.name" +
+        " FROM deltawarps_player" +
+        " INNER JOIN deltawarps_warp" +
+        " ON deltawarps_player.id = deltawarps_warp.ownerId" +
+        " WHERE deltawarps_warp.name = ?;";
     private static final String DELETE_WARP =
-        " DELETE FROM deltawarps_warps" +
-        " WHERE name=?" +
+        " DELETE FROM deltawarps_warp" +
+        " WHERE name = ?" +
         " LIMIT 1;";
 
     private final String sender;
@@ -60,7 +60,8 @@ public class DeleteWarpRunnable implements Runnable
     {
         try(Connection connection = plugin.getDatabaseConnection())
         {
-            String warpOwner = selectWarp(connection);
+            String warpOwner = selectWarpOwner(connection);
+
             if(warpOwner != null)
             {
                 if(ignoreOwner || warpOwner.equals(sender))
@@ -87,16 +88,17 @@ public class DeleteWarpRunnable implements Runnable
         }
     }
 
-    private String selectWarp(Connection connection) throws SQLException
+    private String selectWarpOwner(Connection connection) throws SQLException
     {
-        try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
+        try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP_OWNER))
         {
             statement.setString(1, warpName);
+
             try(ResultSet resultSet = statement.executeQuery())
             {
                 if(resultSet.next())
                 {
-                    return resultSet.getString("deltawarps_players.name");
+                    return resultSet.getString("deltawarps_player.name");
                 }
                 return null;
             }

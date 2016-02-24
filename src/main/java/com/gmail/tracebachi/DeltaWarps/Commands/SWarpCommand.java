@@ -16,12 +16,12 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddServerWarpRunnable;
+import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.massivecraft.factions.entity.FactionColl;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -71,7 +71,7 @@ public class SWarpCommand implements CommandExecutor
         String warpName = args[0].toLowerCase();
         if(warpName.length() >= 30)
         {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
+            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
             return true;
         }
 

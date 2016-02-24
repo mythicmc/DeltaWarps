@@ -32,11 +32,11 @@ import java.sql.SQLException;
 public class GetWarpInfoRunnable implements Runnable
 {
     private static final String SELECT_WARP =
-        " SELECT x, y, z, type, server, deltawarps_players.name" +
-        " FROM deltawarps_warps" +
-        " INNER JOIN deltawarps_players" +
-        " ON deltawarps_warps.owner_id = deltawarps_players.id" +
-        " WHERE deltawarps_warps.name = ?;";
+        " SELECT x, y, z, type, server, deltawarps_player.name" +
+        " FROM deltawarps_warp" +
+        " INNER JOIN deltawarps_player" +
+        " ON deltawarps_warp.ownerId = deltawarps_player.id" +
+        " WHERE deltawarps_warp.name = ?;";
 
     private final String sender;
     private final String warpName;
@@ -59,6 +59,7 @@ public class GetWarpInfoRunnable implements Runnable
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
                 statement.setString(1, warpName);
+
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     if(resultSet.next())
@@ -68,7 +69,7 @@ public class GetWarpInfoRunnable implements Runnable
                         int z = resultSet.getShort("z");
                         String type = resultSet.getString("type");
                         String server = resultSet.getString("server");
-                        String owner = resultSet.getString("deltawarps_players.name");
+                        String owner = resultSet.getString("deltawarps_player.name");
 
                         if(canSeeCoords)
                         {

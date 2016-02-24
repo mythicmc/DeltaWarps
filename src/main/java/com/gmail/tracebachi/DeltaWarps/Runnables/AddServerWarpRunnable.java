@@ -22,7 +22,9 @@ import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -32,9 +34,9 @@ public class AddServerWarpRunnable implements Runnable
     private static final int WARP_NAME_EXISTS = 1062;
 
     private static final String INSERT_WARP =
-        " INSERT INTO deltawarps_warps" +
-        " (name, owner_id, x, y, z, yaw, pitch, type, faction, server)" +
-        " VALUES (?, 1, ?, ?, ?, ?, ?, 'PUBLIC', 'safezone', ?);";
+        " INSERT INTO deltawarps_warp" +
+        " (name, ownerId, x, y, z, yaw, pitch, world, type, faction, server)" +
+        " VALUES (?, 1, ?, ?, ?, ?, ?, ?, 'PUBLIC', NULL, ?);";
 
     private final String sender;
     private final Warp warp;
@@ -60,7 +62,8 @@ public class AddServerWarpRunnable implements Runnable
                 statement.setInt(4, warp.getZ());
                 statement.setFloat(5, warp.getYaw());
                 statement.setFloat(6, warp.getPitch());
-                statement.setString(7, warp.getServer());
+                statement.setString(7, warp.getWorld());
+                statement.setString(8, warp.getServer());
                 statement.execute();
 
                 sendMessage(sender, Prefixes.SUCCESS + "Created server warp " +

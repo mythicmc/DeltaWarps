@@ -18,7 +18,6 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -36,24 +35,21 @@ import java.util.List;
 public class GetPlayerWarpsRunnable implements Runnable
 {
     private static final String SELECT_PLAYER_WARPS =
-        " SELECT deltawarps_warps.name, server, type, deltawarps_players.normal, deltawarps_players.faction" +
-        " FROM deltawarps_warps" +
-        " INNER JOIN deltawarps_players" +
-        " ON deltawarps_players.id = deltawarps_warps.owner_id" +
-        " WHERE deltawarps_players.name = ?;";
+        " SELECT deltawarps_warp.name, server, type, deltawarps_player.normal, deltawarps_player.faction" +
+        " FROM deltawarps_warp" +
+        " INNER JOIN deltawarps_player" +
+        " ON deltawarps_player.id = deltawarps_warp.ownerId" +
+        " WHERE deltawarps_player.name = ?;";
 
     private final String sender;
     private final String player;
-    private final GroupLimits groupLimits;
     private final boolean canSeePrivateWarps;
     private final DeltaWarps plugin;
 
-    public GetPlayerWarpsRunnable(String sender, String player, GroupLimits groupLimits,
-        boolean canSeePrivateWarps, DeltaWarps plugin)
+    public GetPlayerWarpsRunnable(String sender, String player, boolean canSeePrivateWarps, DeltaWarps plugin)
     {
         this.sender = sender.toLowerCase();
         this.player = player.toLowerCase();
-        this.groupLimits = groupLimits;
         this.canSeePrivateWarps = canSeePrivateWarps || sender.equalsIgnoreCase(player);
         this.plugin = plugin;
     }
@@ -66,6 +62,7 @@ public class GetPlayerWarpsRunnable implements Runnable
             try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER_WARPS))
             {
                 statement.setString(1, player);
+
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     short normal = 0;
@@ -75,43 +72,32 @@ public class GetPlayerWarpsRunnable implements Runnable
 
                     while(resultSet.next())
                     {
-                        String name = resultSet.getString("deltawarps_warps.name");
+                        String name = resultSet.getString("deltawarps_warp.name");
                         String server = resultSet.getString("server");
                         WarpType type = WarpType.fromString(resultSet.getString("type"));
 
-                        normal = resultSet.getShort("deltawarps_players.normal");
-                        faction = resultSet.getShort("deltawarps_players.faction");
+                        normal = resultSet.getShort("deltawarps_player.normal");
+                        faction = resultSet.getShort("deltawarps_player.faction");
 
                         if(type == WarpType.PRIVATE && canSeePrivateWarps)
                         {
                             messages.add(Prefixes.INFO +
                                 Prefixes.input(name) + " on " +
                                 Prefixes.input(server) + ", " +
-                                Prefixes.input(type.toString().toLowerCase()));
+                                Prefixes.input(type.name().toLowerCase()));
                         }
                         else
                         {
                             messages.add(Prefixes.INFO +
                                 Prefixes.input(name) + " on " +
                                 Prefixes.input(server) + ", " +
-                                Prefixes.input(type.toString().toLowerCase()));
+                                Prefixes.input(type.name().toLowerCase()));
                         }
                     }
 
-                    if(sender.equals(player))
-                    {
-                        messages.add(1, Prefixes.INFO + "Normal (" +
-                            Prefixes.input(groupLimits.getNormal()) + " + " +
-                            Prefixes.input(normal) + "), Faction (" +
-                            Prefixes.input(groupLimits.getFaction()) + " + " +
-                            Prefixes.input(faction) + ")");
-                    }
-                    else
-                    {
-                        messages.add(1, Prefixes.INFO + "Normal (+" +
-                            Prefixes.input(normal) + "), Faction (+" +
-                            Prefixes.input(faction) + ")");
-                    }
+                    messages.add(1, Prefixes.INFO + "Normal (+" +
+                        Prefixes.input(normal) + "), Faction (+" +
+                        Prefixes.input(faction) + ")");
 
                     sendMessages(sender, messages);
                 }

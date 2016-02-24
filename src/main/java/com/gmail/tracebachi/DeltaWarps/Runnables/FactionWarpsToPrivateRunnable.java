@@ -33,12 +33,12 @@ public class FactionWarpsToPrivateRunnable implements Runnable
 {
     private static final String SELECT_PLAYER =
         " SELECT id" +
-        " FROM deltawarps_players" +
+        " FROM deltawarps_player" +
         " WHERE name = ?;";
     private static final String UPDATE_WARPS =
-        " UPDATE deltawarps_warps" +
+        " UPDATE deltawarps_warp" +
         " SET type = 'PRIVATE', faction = NULL" +
-        " WHERE owner_id = ? AND server = ?;";
+        " WHERE ownerId = ? AND server = ?;";
 
     private final String playerName;
     private final String serverName;
@@ -61,6 +61,7 @@ public class FactionWarpsToPrivateRunnable implements Runnable
             if(playerId != null)
             {
                 int warpsChanged = updateWarps(playerId, connection);
+
                 sendMessage(playerName, Prefixes.INFO + "Updated " +
                     Prefixes.input(warpsChanged) +
                     " warps to private due to you leaving your faction.");

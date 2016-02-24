@@ -55,7 +55,7 @@ public class UseCommand implements IWarpCommand
             Player player = (Player) sender;
             if(args[0].length() >= 30)
             {
-                player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
+                player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
                 return;
             }
 
@@ -82,7 +82,7 @@ public class UseCommand implements IWarpCommand
 
             if(args[0].length() >= 30)
             {
-                sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
+                sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
                 return;
             }
 

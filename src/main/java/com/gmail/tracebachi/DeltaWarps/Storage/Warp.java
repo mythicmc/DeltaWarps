@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Storage;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.Location;
 
 import java.util.regex.Pattern;
@@ -33,27 +34,33 @@ public class Warp
     private final int z;
     private final float yaw;
     private final float pitch;
+    private final String world;
     private final WarpType type;
     private final String faction;
     private final String server;
 
     public Warp(String name, Location location, WarpType type, String faction, String server)
     {
-        this(name,
-            location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-            location.getYaw(), location.getPitch(),
+        this(name, location.getBlockX(), location.getBlockY(), location.getBlockZ(),
+            location.getYaw(), location.getPitch(), location.getWorld().getName(),
             type, faction, server);
     }
 
-    public Warp(String name, int x, int y, int z, float yaw, float pitch,
+    public Warp(String name, int x, int y, int z, float yaw, float pitch, String world,
         WarpType type, String faction, String server)
     {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkNotNull(world);
+        Preconditions.checkNotNull(type);
+        Preconditions.checkNotNull(server);
+
         this.name = name.toLowerCase();
         this.x = x;
         this.y = y;
         this.z = z;
         this.yaw = Math.round(yaw);
         this.pitch = Math.round(pitch);
+        this.world = world;
         this.type = type;
         this.faction = faction;
         this.server = server;
@@ -89,6 +96,11 @@ public class Warp
         return pitch;
     }
 
+    public String getWorld()
+    {
+        return world;
+    }
+
     public WarpType getType()
     {
         return type;
@@ -107,23 +119,24 @@ public class Warp
     @Override
     public String toString()
     {
-        return name + "," + x + "," + y + "," + z + "," +
-            yaw + "," + pitch + "," + type + "," + faction + "," + server;
+        return name + "," + x + "," + y + "," + z + "," + yaw + "," + pitch +
+            "," + world + "," + type + "," + faction + "," + server;
     }
 
     public static Warp fromString(String source)
     {
-        String[] fields = separator.split(source, 9);
+        String[] fields = separator.split(source, 10);
         String name = fields[0];
         int x = Integer.parseInt(fields[1]);
         int y = Integer.parseInt(fields[2]);
         int z = Integer.parseInt(fields[3]);
         float yaw = Float.parseFloat(fields[4]);
         float pitch = Float.parseFloat(fields[5]);
-        WarpType type = WarpType.fromString(fields[6]);
-        String faction = fields[7];
-        String server = fields[8];
+        String world = fields[6];
+        WarpType type = WarpType.fromString(fields[7]);
+        String faction = fields[8];
+        String server = fields[9];
 
-        return new Warp(name, x, y, z, yaw, pitch, type, faction, server);
+        return new Warp(name, x, y, z, yaw, pitch, world, type, faction, server);
     }
 }

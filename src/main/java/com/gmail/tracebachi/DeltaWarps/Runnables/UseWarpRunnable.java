@@ -16,18 +16,19 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
+import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
+import com.gmail.tracebachi.DeltaWarps.PlayerWarpEvent;
+import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
-import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
-import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.PlayerWarpEvent;
-import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -61,7 +62,8 @@ public class UseWarpRunnable implements Runnable
         boolean isForceWarpUse = !sender.equals(warper);
 
         Player player = Bukkit.getPlayer(warper);
-        if(player != null && player.isOnline())
+
+        if(player != null)
         {
             String currentServerName = deltaRedisApi.getServerName();
             boolean isOwner = player.getName().equalsIgnoreCase(warpOwner);
@@ -92,7 +94,8 @@ public class UseWarpRunnable implements Runnable
                 else
                 {
                     Player senderPlayer = Bukkit.getPlayer(sender);
-                    if(senderPlayer != null && senderPlayer.isOnline())
+
+                    if(senderPlayer != null)
                     {
                         senderPlayer.sendMessage(Prefixes.FAILURE + Prefixes.input(warper) +
                             " is no longer online.");
@@ -105,7 +108,7 @@ public class UseWarpRunnable implements Runnable
     private void onSameServerWarp(Player player, boolean isOwner, boolean canUseNormal,
         boolean canUseFaction, boolean canUseOthers)
     {
-        Location warpLocation = getWarpLocation(player, warp);
+        Location warpLocation = getWarpLocation(warp);
 
         if(warp.getType() == WarpType.PUBLIC)
         {
@@ -135,7 +138,7 @@ public class UseWarpRunnable implements Runnable
 
                 if(!faction.isNone())
                 {
-                    if(faction.getId().equals(warp.getFaction()))
+                    if(canUseOthers || faction.getId().equals(warp.getFaction()))
                     {
                         warpPlayerWithEvent(player, warpLocation);
                         player.sendMessage(Prefixes.SUCCESS + "Warping to " +
@@ -221,8 +224,7 @@ public class UseWarpRunnable implements Runnable
             {
                 if(isOwner || canUseOthers)
                 {
-                    deltaRedisApi.publish(warp.getServer(), WARP_CHANNEL,
-                        player.getName() + "/\\" + warp);
+                    deltaRedisApi.publish(warp.getServer(), WARP_CHANNEL, player.getName(), warp.toString());
                     deltaEssentialsPlugin.sendToServer(player, warp.getServer());
                     player.sendMessage(Prefixes.SUCCESS + "Warping ...");
                 }
@@ -238,10 +240,12 @@ public class UseWarpRunnable implements Runnable
         }
     }
 
-    private Location getWarpLocation(Player player, Warp warp)
+    private Location getWarpLocation(Warp warp)
     {
-        return new Location(player.getWorld(),
-            warp.getX() + 0.5, warp.getY(), warp.getZ() + 0.5,
+        World world = Bukkit.getWorld(warp.getWorld());
+
+        return new Location(world,
+            warp.getX() + 0.5, warp.getY() + 0.5, warp.getZ() + 0.5,
             warp.getYaw(), warp.getPitch());
     }
 

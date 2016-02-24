@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
@@ -25,7 +26,6 @@ import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -85,7 +85,7 @@ public class AddCommand implements IWarpCommand
 
         if(warpName.length() >= 30)
         {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
+            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;
         }
 

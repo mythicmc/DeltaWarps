@@ -16,13 +16,14 @@
  */
 package com.gmail.tracebachi.DeltaWarps;
 
-import com.massivecraft.factions.entity.MPlayer;
-import com.massivecraft.factions.event.EventFactionsMembershipChange;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent;
 import com.gmail.tracebachi.DeltaWarps.Runnables.FactionWarpsToPrivateRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
+import com.massivecraft.factions.entity.MPlayer;
+import com.massivecraft.factions.event.EventFactionsMembershipChange;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,7 +33,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Pattern;
+
+import static com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent.DELTA_PATTERN;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
@@ -40,7 +42,6 @@ import java.util.regex.Pattern;
 public class DeltaWarpsListener implements Listener
 {
     private static final String WARP_CHANNEL = "DW-Warp";
-    private static final Pattern PATTERN = Pattern.compile("/\\\\");
 
     private final String serverName;
     private HashMap<String, WarpRequest> warpRequests = new HashMap<>();
@@ -54,6 +55,8 @@ public class DeltaWarpsListener implements Listener
 
     public void shutdown()
     {
+        warpRequests.clear();
+        warpRequests = null;
         plugin = null;
     }
 
@@ -62,22 +65,23 @@ public class DeltaWarpsListener implements Listener
     {
         if(event.getChannel().equals(WARP_CHANNEL))
         {
-            String[] splitMessage = PATTERN.split(event.getMessage(), 2);
+            String[] splitMessage = DELTA_PATTERN.split(event.getMessage(), 2);
             String name = splitMessage[0];
             Warp warp = Warp.fromString(splitMessage[1]);
             Player player = Bukkit.getPlayer(name);
 
-            if(player != null && player.isOnline())
-            {
-                Location location = new Location(player.getWorld(),
-                    warp.getX() + 0.5, warp.getY(), warp.getZ() + 0.5,
-                    warp.getYaw(), warp.getPitch());
-                warpPlayerWithEvent(player, location);
-            }
-            else
+            if(player == null)
             {
                 warpRequests.put(name, new WarpRequest(warp));
+                return;
             }
+
+            World world = Bukkit.getWorld(warp.getWorld());
+            Location location = new Location(world,
+                warp.getX() + 0.5, warp.getY() + 0.5, warp.getZ() + 0.5,
+                warp.getYaw(), warp.getPitch());
+
+            warpPlayerWithEvent(player, location);
         }
     }
 
@@ -89,9 +93,11 @@ public class DeltaWarpsListener implements Listener
 
         if(request != null)
         {
-            Location location = new Location(player.getWorld(),
-                request.warp.getX() + 0.5, request.warp.getY(), request.warp.getZ() + 0.5,
+            World world = Bukkit.getWorld(request.warp.getWorld());
+            Location location = new Location(world,
+                request.warp.getX() + 0.5, request.warp.getY() + 0.5, request.warp.getZ() + 0.5,
                 request.warp.getYaw(), request.warp.getPitch());
+
             warpPlayerWithEvent(player, location);
         }
     }
@@ -125,6 +131,17 @@ public class DeltaWarpsListener implements Listener
         }
     }
 
+    private void warpPlayerWithEvent(Player player, Location location)
+    {
+        PlayerWarpEvent event = new PlayerWarpEvent(player, location);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if(!event.isCancelled())
+        {
+            player.teleport(location);
+        }
+    }
+
     private class WarpRequest
     {
         private final Warp warp;
@@ -134,17 +151,6 @@ public class DeltaWarpsListener implements Listener
         {
             this.warp = warp;
             this.createdAt = System.currentTimeMillis();
-        }
-    }
-
-    private void warpPlayerWithEvent(Player player, Location location)
-    {
-        PlayerWarpEvent event = new PlayerWarpEvent(player, location);
-        Bukkit.getPluginManager().callEvent(event);
-
-        if(!event.isCancelled())
-        {
-            player.teleport(location);
         }
     }
 }

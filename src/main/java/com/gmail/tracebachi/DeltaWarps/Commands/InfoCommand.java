@@ -16,22 +16,18 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
+import com.gmail.tracebachi.DeltaWarps.Runnables.GetFactionWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetPlayerWarpsRunnable;
+import com.gmail.tracebachi.DeltaWarps.Runnables.GetWarpInfoRunnable;
 import com.google.common.base.Preconditions;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import com.gmail.tracebachi.DeltaWarps.Runnables.GetFactionWarpsRunnable;
-import com.gmail.tracebachi.DeltaWarps.Runnables.GetWarpInfoRunnable;
-import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
@@ -39,20 +35,17 @@ import java.util.Map;
 public class InfoCommand implements IWarpCommand
 {
     private final String serverName;
-    private HashMap<String, GroupLimits> groupLimits;
     private DeltaWarps plugin;
 
-    public InfoCommand(String serverName, HashMap<String, GroupLimits> groupLimits, DeltaWarps plugin)
+    public InfoCommand(String serverName, DeltaWarps plugin)
     {
         this.serverName = serverName;
-        this.groupLimits = groupLimits;
         this.plugin = plugin;
     }
 
     @Override
     public void shutdown()
     {
-        groupLimits = null;
         plugin = null;
     }
 
@@ -143,7 +136,7 @@ public class InfoCommand implements IWarpCommand
     private void getPlayerWarps(CommandSender sender, String playerName)
     {
         GetPlayerWarpsRunnable runnable = new GetPlayerWarpsRunnable(sender.getName(), playerName,
-            getGroupLimitsForSender(sender), sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
+            sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
@@ -154,23 +147,5 @@ public class InfoCommand implements IWarpCommand
         GetFactionWarpsRunnable runnable = new GetFactionWarpsRunnable(
             sender.getName(), faction.getName(), faction.getId(), serverName, plugin);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
-    }
-
-    private GroupLimits getGroupLimitsForSender(CommandSender sender)
-    {
-        if(!(sender instanceof Player))
-        {
-            return new GroupLimits(0, 0);
-        }
-
-        Player player = (Player) sender;
-        for(Map.Entry<String, GroupLimits> entry : groupLimits.entrySet())
-        {
-            if(player.hasPermission("DeltaWarps.Group." + entry.getKey()))
-            {
-                return entry.getValue();
-            }
-        }
-        return new GroupLimits(0, 0);
     }
 }

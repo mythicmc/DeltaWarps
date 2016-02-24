@@ -18,8 +18,8 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
+import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,14 +34,14 @@ import java.sql.SQLException;
 public class MoveWarpRunnable implements Runnable
 {
     private static final String SELECT_WARP =
-        " SELECT type, deltawarps_players.name" +
-        " FROM deltawarps_warps" +
-        " INNER JOIN deltawarps_players" +
-        " ON deltawarps_warps.owner_id = deltawarps_players.id" +
-        " WHERE deltawarps_warps.name = ?;";
+        " SELECT type, deltawarps_player.name" +
+        " FROM deltawarps_warp" +
+        " INNER JOIN deltawarps_player" +
+        " ON deltawarps_warp.owner_id = deltawarps_player.id" +
+        " WHERE deltawarps_warp.name = ?;";
     private static final String UPDATE_WARP =
-        " UPDATE deltawarps_warps" +
-        " SET x=?, y=?, z=?, yaw=?, pitch=?, type=?, faction=?, server=?" +
+        " UPDATE deltawarps_warp" +
+        " SET x=?, y=?, z=?, yaw=?, pitch=?, world=?, type=?, faction=?, server=?" +
         " WHERE name = ?" +
         " LIMIT 1;";
 
@@ -51,7 +51,6 @@ public class MoveWarpRunnable implements Runnable
     private final Warp warp;
     private final boolean ignoreOwner;
     private final DeltaWarps plugin;
-
 
     public MoveWarpRunnable(String sender, String playerFactionId, String factionAtPosId,
         Warp warp, boolean ignoreOwner, DeltaWarps plugin)
@@ -72,6 +71,7 @@ public class MoveWarpRunnable implements Runnable
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
                 statement.setString(1, warp.getName());
+
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     if(resultSet.next())
@@ -96,7 +96,7 @@ public class MoveWarpRunnable implements Runnable
     private void onWarpFound(ResultSet resultSet, Connection connection) throws SQLException
     {
         WarpType originalType = WarpType.fromString(resultSet.getString("type"));
-        String owner = resultSet.getString("deltawarps_players.name");
+        String owner = resultSet.getString("deltawarps_player.name");
         Warp newWarp;
 
         if(!ignoreOwner && !owner.equals(sender))
@@ -113,7 +113,7 @@ public class MoveWarpRunnable implements Runnable
                 {
                     newWarp = new Warp(warp.getName(),
                         warp.getX(), warp.getY(), warp.getZ(),
-                        warp.getYaw(), warp.getPitch(),
+                        warp.getYaw(), warp.getPitch(), warp.getWorld(),
                         WarpType.FACTION, playerFactionId, warp.getServer());
 
                     updateWarp(newWarp, connection);
@@ -129,7 +129,7 @@ public class MoveWarpRunnable implements Runnable
             {
                 newWarp = new Warp(warp.getName(),
                     warp.getX(), warp.getY(), warp.getZ(),
-                    warp.getYaw(), warp.getPitch(),
+                    warp.getYaw(), warp.getPitch(), warp.getWorld(),
                     WarpType.PRIVATE, null, warp.getServer());
 
                 updateWarp(newWarp, connection);
@@ -140,7 +140,7 @@ public class MoveWarpRunnable implements Runnable
         {
             newWarp = new Warp(warp.getName(),
                 warp.getX(), warp.getY(), warp.getZ(),
-                warp.getYaw(), warp.getPitch(),
+                warp.getYaw(), warp.getPitch(), warp.getWorld(),
                 originalType, null, warp.getServer());
 
             updateWarp(newWarp, connection);
@@ -157,10 +157,11 @@ public class MoveWarpRunnable implements Runnable
             statement.setInt(3, newWarp.getZ());
             statement.setFloat(4, newWarp.getYaw());
             statement.setFloat(5, newWarp.getPitch());
-            statement.setString(6, newWarp.getType().toString());
-            statement.setString(7, newWarp.getFaction());
-            statement.setString(8, newWarp.getServer());
-            statement.setString(9, newWarp.getName());
+            statement.setString(6, newWarp.getWorld());
+            statement.setString(7, newWarp.getType().toString());
+            statement.setString(8, newWarp.getFaction());
+            statement.setString(9, newWarp.getServer());
+            statement.setString(10, newWarp.getName());
             return statement.executeUpdate();
         }
     }

@@ -52,7 +52,7 @@ public class RemoveCommand implements IWarpCommand
 
         if(warpName.length() >= 30)
         {
-            sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to less than 30 characters.");
+            sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;
         }
 

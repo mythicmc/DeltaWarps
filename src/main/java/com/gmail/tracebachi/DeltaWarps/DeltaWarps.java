@@ -20,9 +20,9 @@ import com.gmail.tracebachi.DbShare.DbShare;
 import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedis;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
+import com.gmail.tracebachi.DeltaWarps.Commands.SWarpCommand;
 import com.gmail.tracebachi.DeltaWarps.Commands.WarpCommand;
 import com.gmail.tracebachi.DeltaWarps.Runnables.UseWarpRunnable;
-import com.gmail.tracebachi.DeltaWarps.Commands.SWarpCommand;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,30 +35,32 @@ import java.sql.*;
 public class DeltaWarps extends JavaPlugin
 {
     private static final String CREATE_PLAYER_TABLE =
-        " CREATE TABLE IF NOT EXISTS deltawarps_players (" +
+        " CREATE TABLE IF NOT EXISTS deltawarps_player (" +
         " `id`       INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY," +
         " `name`     VARCHAR(32) NOT NULL UNIQUE KEY," +
         " `normal`   SMALLINT UNSIGNED NOT NULL DEFAULT 0," +
         " `faction`  SMALLINT UNSIGNED NOT NULL DEFAULT 0" +
         " );";
     private static final String CREATE_WARP_TABLE =
-        " CREATE TABLE IF NOT EXISTS deltawarps_warps (" +
+        " CREATE TABLE IF NOT EXISTS deltawarps_warp (" +
         " `name`      VARCHAR(32) NOT NULL PRIMARY KEY," +
-        " `owner_id`  INT UNSIGNED NOT NULL," +
+        " `ownerId`  INT UNSIGNED NOT NULL," +
         " `x`         INT SIGNED NOT NULL," +
         " `y`         INT SIGNED NOT NULL," +
         " `z`         INT SIGNED NOT NULL," +
         " `yaw`       FLOAT NOT NULL," +
         " `pitch`     FLOAT NOT NULL," +
+        " `world`     VARCHAR(32) NOT NULL," +
         " `type`      VARCHAR(7) NOT NULL," +
         " `faction`   VARCHAR(36)," +
         " `server`    VARCHAR(32) NOT NULL," +
+        " CONSTRAINT `fkOwnerId` FOREIGN KEY (`ownerId`) REFERENCES `deltawarps_player` (`id`) ON DELETE CASCADE," +
         " KEY `faction_and_server` (`faction`, `server`)" +
         " );";
     private static final String SELECT_SERVER_WARP_OWNER =
-        " SELECT 1 FROM deltawarps_players WHERE name = '!DeltaWarps!';";
+        " SELECT 1 FROM deltawarps_player WHERE name = '!DeltaWarps!';";
     private static final String INSERT_SERVER_WARP_OWNER =
-        " INSERT INTO deltawarps_players" +
+        " INSERT INTO deltawarps_player" +
         " (id, name, normal, faction)" +
         " VALUES(1, '!DeltaWarps!', 65535, 65535);";
 
@@ -157,6 +159,7 @@ public class DeltaWarps extends JavaPlugin
                 getLogger().info("Creating player table ...");
                 statement.execute();
             }
+
             try(Statement statement = connection.createStatement())
             {
                 try(ResultSet resultSet = statement.executeQuery(SELECT_SERVER_WARP_OWNER))
@@ -167,6 +170,7 @@ public class DeltaWarps extends JavaPlugin
                     }
                 }
             }
+
             try(PreparedStatement statement = connection.prepareStatement(CREATE_WARP_TABLE))
             {
                 getLogger().info("Creating warps table ...");

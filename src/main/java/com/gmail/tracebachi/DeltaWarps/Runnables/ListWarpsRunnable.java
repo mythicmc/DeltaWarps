@@ -37,9 +37,9 @@ public class ListWarpsRunnable implements Runnable
 {
     private static final String SELECT_WARP =
         " SELECT name" +
-        " FROM deltawarps_warps" +
+        " FROM deltawarps_warp" +
         " WHERE type = 'PUBLIC'" +
-        " LIMIT 50 OFFSET ?;";
+        " LIMIT 75 OFFSET ?;";
 
     private final String sender;
     private final int pageOffset;
@@ -60,9 +60,10 @@ public class ListWarpsRunnable implements Runnable
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
                 statement.setInt(1, pageOffset * 50);
+
                 try(ResultSet resultSet = statement.executeQuery())
                 {
-                    List<String> messages = new ArrayList<>(50);
+                    List<String> messages = new ArrayList<>(75);
                     String header = Prefixes.INFO + "Warp list (Page " + Prefixes.input(pageOffset) + "): ";
 
                     while(resultSet.next())

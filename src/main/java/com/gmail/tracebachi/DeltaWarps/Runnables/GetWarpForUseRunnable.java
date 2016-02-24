@@ -17,9 +17,9 @@
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
+import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,11 +34,11 @@ import java.sql.SQLException;
 public class GetWarpForUseRunnable implements Runnable
 {
     private static final String SELECT_WARP =
-        " SELECT x, y, z, yaw, pitch, type, deltawarps_warps.faction, server, deltawarps_players.name" +
-        " FROM deltawarps_warps" +
-        " INNER JOIN deltawarps_players" +
-        " ON deltawarps_players.id = deltawarps_warps.owner_id" +
-        " WHERE deltawarps_warps.name = ?;";
+        " SELECT x, y, z, yaw, pitch, world, type, deltawarps_warp.faction, server, deltawarps_player.name" +
+        " FROM deltawarps_warp" +
+        " INNER JOIN deltawarps_player" +
+        " ON deltawarps_player.id = deltawarps_warp.ownerId" +
+        " WHERE deltawarps_warp.name = ?;";
 
     private final String sender;
     private final String warper;
@@ -61,11 +61,12 @@ public class GetWarpForUseRunnable implements Runnable
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
                 statement.setString(1, warpName);
+
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     if(resultSet.next())
                     {
-                        String warpOwner = resultSet.getString("deltawarps_players.name");
+                        String warpOwner = resultSet.getString("deltawarps_player.name");
                         Warp warp = getWarpFromResultSet(resultSet);
 
                         plugin.useWarpSync(sender, warper, warpOwner, warp);
@@ -92,10 +93,12 @@ public class GetWarpForUseRunnable implements Runnable
         int z = resultSet.getInt("z");
         float yaw = resultSet.getFloat("yaw");
         float pitch = resultSet.getFloat("pitch");
+        String world = resultSet.getString("world");
         WarpType type = WarpType.valueOf(resultSet.getString("type"));
-        String faction = resultSet.getString("deltawarps_warps.faction");
+        String faction = resultSet.getString("deltawarps_warp.faction");
         String server = resultSet.getString("server");
-        return new Warp(warpName, x, y, z, yaw, pitch, type, faction, server);
+
+        return new Warp(warpName, x, y, z, yaw, pitch, world, type, faction, server);
     }
 
     private void sendMessage(String name, String message)

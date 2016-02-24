@@ -19,10 +19,9 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
-import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
+import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
@@ -35,25 +34,21 @@ public class AddWarpRunnable implements Runnable
     private static final int WARP_NAME_EXISTS = 1062;
 
     private static final String INSERT_PLAYER =
-        " INSERT INTO deltawarps_players" +
-        " (name)" +
-        " VALUES(?)" +
-        " ON DUPLICATE KEY UPDATE" +
-        " id = id;";
+        " INSERT INTO deltawarps_player (name) VALUES(?);";
     private static final String SELECT_PLAYER =
         " SELECT id, normal, faction" +
-        " FROM deltawarps_players" +
+        " FROM deltawarps_player" +
         " WHERE name = ?;";
     private static final String INSERT_WARP =
-        " INSERT INTO deltawarps_warps" +
-        " (name, owner_id, x, y, z, yaw, pitch, type, faction, server)" +
-        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        " INSERT INTO deltawarps_warp" +
+        " (name, ownerId, x, y, z, yaw, pitch, world, type, faction, server)" +
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     private static final String SELECT_PLAYER_WARPS =
-        " SELECT type " +
-        " FROM deltawarps_warps" +
-        " INNER JOIN deltawarps_players" +
-        " ON deltawarps_players.id = deltawarps_warps.owner_id" +
-        " WHERE deltawarps_players.id = ?;";
+        " SELECT type" +
+        " FROM deltawarps_warp" +
+        " INNER JOIN deltawarps_player" +
+        " ON deltawarps_player.id = deltawarps_warp.ownerId" +
+        " WHERE deltawarps_player.id = ?;";
 
     private final String sender;
     private final Warp warp;
@@ -111,7 +106,7 @@ public class AddWarpRunnable implements Runnable
                     {
                         insertWarp(connection);
                         sendMessage(sender, Prefixes.SUCCESS + "Created a new warp named " +
-                            ChatColor.WHITE + warp.getName());
+                            Prefixes.input(warp.getName()));
                     }
                 }
                 catch(SQLException ex)
@@ -146,6 +141,7 @@ public class AddWarpRunnable implements Runnable
         try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER))
         {
             statement.setString(1, sender);
+
             try(ResultSet resultSet = statement.executeQuery())
             {
                 if(resultSet.next())
@@ -191,7 +187,7 @@ public class AddWarpRunnable implements Runnable
             {
                 while(resultSet.next())
                 {
-                    if(resultSet.getString("type").equals(WarpType.FACTION.toString()))
+                    if(resultSet.getString("type").equals(WarpType.FACTION.name()))
                     {
                         factionCount++;
                     }
@@ -215,9 +211,10 @@ public class AddWarpRunnable implements Runnable
             statement.setInt(5, warp.getZ());
             statement.setFloat(6, warp.getYaw());
             statement.setFloat(7, warp.getPitch());
-            statement.setString(8, warp.getType().toString());
-            statement.setString(9, warp.getFaction());
-            statement.setString(10, warp.getServer());
+            statement.setString(8, warp.getWorld());
+            statement.setString(9, warp.getType().name());
+            statement.setString(10, warp.getFaction());
+            statement.setString(11, warp.getServer());
             statement.execute();
         }
     }
