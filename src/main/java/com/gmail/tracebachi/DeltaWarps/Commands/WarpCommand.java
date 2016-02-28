@@ -107,7 +107,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             sender.sendMessage(Prefixes.INFO + "/warp [add, remove, move, info, list, give]");
         }
-        else if(args[0].equalsIgnoreCase("add"))
+        else if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("set"))
         {
             if(args.length < 3)
             {
@@ -118,7 +118,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
                 addCommand.onCommand(sender, args);
             }
         }
-        else if(args[0].equalsIgnoreCase("remove"))
+        else if(args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete"))
         {
             if(args.length < 2)
             {

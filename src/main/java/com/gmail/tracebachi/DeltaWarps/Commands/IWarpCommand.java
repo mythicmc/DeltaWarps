@@ -27,7 +27,8 @@ import java.util.HashSet;
  */
 public interface IWarpCommand extends Shutdownable
 {
-    HashSet<String> reserved = new HashSet<>(Arrays.asList("add", "give", "info", "list", "move", "remove"));
+    HashSet<String> reserved = new HashSet<>(Arrays
+        .asList("add", "set", "remove", "delete", "move", "give", "info", "list"));
 
     void onCommand(CommandSender sender, String[] args);
 }
