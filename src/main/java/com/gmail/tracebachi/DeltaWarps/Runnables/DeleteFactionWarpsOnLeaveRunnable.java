@@ -29,22 +29,21 @@ import java.sql.SQLException;
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
-public class FactionWarpsToPrivateRunnable implements Runnable
+public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
 {
     private static final String SELECT_PLAYER =
         " SELECT id" +
         " FROM deltawarps_player" +
         " WHERE name = ?;";
-    private static final String UPDATE_WARPS =
-        " UPDATE deltawarps_warp" +
-        " SET type = 'PRIVATE', faction = NULL" +
-        " WHERE ownerId = ? AND server = ?;";
+    private static final String DELETE_WARPS =
+        " DELETE FROM deltawarps_warp" +
+        " WHERE ownerId = ? AND server = ? AND type = 'FACTION';";
 
     private final String playerName;
     private final String serverName;
     private final DeltaWarps plugin;
 
-    public FactionWarpsToPrivateRunnable(String playerName, String serverName, DeltaWarps plugin)
+    public DeleteFactionWarpsOnLeaveRunnable(String playerName, String serverName, DeltaWarps plugin)
     {
         this.playerName = playerName.toLowerCase();
         this.serverName = serverName;
@@ -62,7 +61,7 @@ public class FactionWarpsToPrivateRunnable implements Runnable
             {
                 int warpsChanged = updateWarps(playerId, connection);
 
-                sendMessage(playerName, Prefixes.INFO + "Updated " +
+                sendMessage(playerName, Prefixes.INFO + "Deleted " +
                     Prefixes.input(warpsChanged) +
                     " warps to private due to you leaving your faction.");
             }
@@ -79,6 +78,7 @@ public class FactionWarpsToPrivateRunnable implements Runnable
         try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER))
         {
             statement.setString(1, playerName);
+
             try(ResultSet resultSet = statement.executeQuery())
             {
                 if(resultSet.next())
@@ -92,7 +92,7 @@ public class FactionWarpsToPrivateRunnable implements Runnable
 
     private int updateWarps(Integer playerId, Connection connection) throws SQLException
     {
-        try(PreparedStatement statement = connection.prepareStatement(UPDATE_WARPS))
+        try(PreparedStatement statement = connection.prepareStatement(DELETE_WARPS))
         {
             statement.setInt(1, playerId);
             statement.setString(2, serverName);

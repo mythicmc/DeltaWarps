@@ -17,7 +17,7 @@
 package com.gmail.tracebachi.DeltaWarps;
 
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent;
-import com.gmail.tracebachi.DeltaWarps.Runnables.FactionWarpsToPrivateRunnable;
+import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteFactionWarpsOnLeaveRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.factions.event.EventFactionsMembershipChange;
@@ -111,7 +111,7 @@ public class DeltaWarpsListener implements Listener
         {
             MPlayer mPlayer = event.getMPlayer();
 
-            FactionWarpsToPrivateRunnable runnable = new FactionWarpsToPrivateRunnable(
+            DeleteFactionWarpsOnLeaveRunnable runnable = new DeleteFactionWarpsOnLeaveRunnable(
                 mPlayer.getName(), serverName, plugin);
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
         }

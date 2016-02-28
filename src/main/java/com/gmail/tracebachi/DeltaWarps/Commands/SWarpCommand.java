@@ -21,7 +21,6 @@ import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddServerWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
-import com.massivecraft.factions.entity.FactionColl;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -81,8 +80,7 @@ public class SWarpCommand implements CommandExecutor
             return true;
         }
 
-        Warp warp = new Warp(warpName, player.getLocation(), WarpType.PUBLIC,
-            FactionColl.get().getSafezone().getId(), serverName);
+        Warp warp = new Warp(warpName, player.getLocation(), WarpType.PUBLIC, null, serverName);
         AddServerWarpRunnable runnable = new AddServerWarpRunnable(sender.getName(), warp, plugin);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
         return true;
