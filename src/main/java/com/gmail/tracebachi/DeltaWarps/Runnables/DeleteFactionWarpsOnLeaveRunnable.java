@@ -63,7 +63,7 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
 
                 sendMessage(playerName, Prefixes.INFO + "Deleted " +
                     Prefixes.input(warpsChanged) +
-                    " warps to private due to you leaving your faction.");
+                    " warps due to you leaving your faction.");
             }
         }
         catch(SQLException ex)
