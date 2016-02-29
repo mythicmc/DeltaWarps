@@ -109,9 +109,9 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         }
         else if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("set"))
         {
-            if(args.length < 3)
+            if(args.length < 2)
             {
-                sender.sendMessage(Prefixes.INFO + "/warp add <public|faction|private> <warp name>");
+                sender.sendMessage(Prefixes.INFO + "/warp add <warp name> [public|faction|private]");
             }
             else
             {

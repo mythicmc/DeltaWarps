@@ -60,8 +60,8 @@ public class AddCommand implements IWarpCommand
     @Override
     public void onCommand(CommandSender sender, String[] args)
     {
-        String warpTypeString = args[1];
-        String warpName = args[2].toLowerCase();
+        String warpName = args[1].toLowerCase();
+        String warpTypeString = (args.length >= 3) ? args[2] : "PRIVATE";
 
         if(!(sender instanceof Player))
         {
@@ -70,6 +70,7 @@ public class AddCommand implements IWarpCommand
         }
 
         Player player = (Player) sender;
+
         if(!player.hasPermission("DeltaWarps.Player.Add"))
         {
             player.sendMessage(Prefixes.FAILURE + "You do not have permission to add warps.");
@@ -77,6 +78,7 @@ public class AddCommand implements IWarpCommand
         }
 
         WarpType type = WarpType.fromString(warpTypeString);
+
         if(type == null)
         {
             player.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + ChatColor.WHITE + warpTypeString);
