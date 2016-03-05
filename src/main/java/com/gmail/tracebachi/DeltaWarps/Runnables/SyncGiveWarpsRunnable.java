@@ -16,21 +16,21 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
+
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
-public class GiveWarpsRunnable implements Runnable
+public class SyncGiveWarpsRunnable implements Runnable
 {
     private static final String SELECT_PLAYER =
         " SELECT normal, faction" +
@@ -44,15 +44,15 @@ public class GiveWarpsRunnable implements Runnable
         " normal = VALUES(normal)," +
         " faction = VALUES(faction);";
 
-    private final String sender;
+    private final CommandSender sender;
     private final String receiver;
     private final WarpType type;
     private final int amount;
     private final DeltaWarps plugin;
 
-    public GiveWarpsRunnable(String sender, String receiver, WarpType type, int amount, DeltaWarps plugin)
+    public SyncGiveWarpsRunnable(CommandSender sender, String receiver, WarpType type, int amount, DeltaWarps plugin)
     {
-        this.sender = sender.toLowerCase();
+        this.sender = sender;
         this.receiver = receiver.toLowerCase();
         this.type = type;
         this.amount = amount;
@@ -86,18 +86,18 @@ public class GiveWarpsRunnable implements Runnable
                 if(currentFaction + amount < 0)
                 {
                     updatePlayer(connection, currentNormal, (short) 0);
-                    sendMessage(sender, Prefixes.SUCCESS + "Updated faction warps for " +
-                        Prefixes.input(receiver) + " from " +
-                        Prefixes.input(currentFaction) + " to " +
-                        Prefixes.input(0));
+                    sender.sendMessage(SUCCESS + "Updated faction warps for " +
+                        input(receiver) + " from " +
+                        input(currentFaction) + " to " +
+                        input(0));
                 }
                 else
                 {
                     updatePlayer(connection, currentNormal, (short) (currentFaction + amount));
-                    sendMessage(sender, Prefixes.SUCCESS + "Updated faction warps for " +
-                        Prefixes.input(receiver) + " from " +
-                        Prefixes.input(currentFaction) + " to " +
-                        Prefixes.input(currentFaction + amount));
+                    sender.sendMessage(SUCCESS + "Updated faction warps for " +
+                        input(receiver) + " from " +
+                        input(currentFaction) + " to " +
+                        input(currentFaction + amount));
                 }
             }
             else
@@ -105,24 +105,24 @@ public class GiveWarpsRunnable implements Runnable
                 if(currentNormal + amount < 0)
                 {
                     updatePlayer(connection, (short) 0, currentFaction);
-                    sendMessage(sender, Prefixes.SUCCESS + "Updated normal warps for " +
-                        Prefixes.input(receiver) + " from " +
-                        Prefixes.input(currentNormal) + " to " +
-                        Prefixes.input(0));
+                    sender.sendMessage(SUCCESS + "Updated normal warps for " +
+                        input(receiver) + " from " +
+                        input(currentNormal) + " to " +
+                        input(0));
                 }
                 else
                 {
                     updatePlayer(connection, (short) (currentNormal + amount), currentFaction);
-                    sendMessage(sender, Prefixes.SUCCESS + "Updated normal warps for " +
-                        Prefixes.input(receiver) + " from " +
-                        Prefixes.input(currentNormal) + " to " +
-                        Prefixes.input(currentNormal + amount));
+                    sender.sendMessage(SUCCESS + "Updated normal warps for " +
+                        input(receiver) + " from " +
+                        input(currentNormal) + " to " +
+                        input(currentNormal + amount));
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
+            sender.sendMessage(FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
         }
     }
@@ -136,24 +136,5 @@ public class GiveWarpsRunnable implements Runnable
             statement.setShort(3, newFaction);
             statement.execute();
         }
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                Bukkit.getConsoleSender().sendMessage(message);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    player.sendMessage(message);
-                }
-            }
-        });
     }
 }

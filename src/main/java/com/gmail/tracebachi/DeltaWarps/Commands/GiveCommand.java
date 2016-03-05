@@ -18,7 +18,7 @@ package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import com.gmail.tracebachi.DeltaWarps.Runnables.GiveWarpsRunnable;
+import com.gmail.tracebachi.DeltaWarps.Runnables.SyncGiveWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -68,8 +68,8 @@ public class GiveCommand implements IWarpCommand
             return;
         }
 
-        GiveWarpsRunnable runnable = new GiveWarpsRunnable(sender.getName(), receiver, type, amount, plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        SyncGiveWarpsRunnable runnable = new SyncGiveWarpsRunnable(sender, receiver, type, amount, plugin);
+        plugin.getServer().getScheduler().runTask(plugin, runnable);
     }
 
     private Integer parseInt(String source)
