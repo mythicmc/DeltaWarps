@@ -20,6 +20,7 @@ import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.MoveWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
+import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.MPlayer;
@@ -87,7 +88,7 @@ public class MoveCommand implements IWarpCommand
             }
         }
 
-        Warp warp = new Warp(warpName, player.getLocation(), null, playerFactionId, serverName);
+        Warp warp = new Warp(warpName, player.getLocation(), WarpType.PRIVATE, playerFactionId, serverName);
         MoveWarpRunnable runnable = new MoveWarpRunnable(sender.getName(), playerFactionId,
             factionAtPosId, warp, sender.hasPermission("DeltaWarps.Staff.Move"), plugin);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
