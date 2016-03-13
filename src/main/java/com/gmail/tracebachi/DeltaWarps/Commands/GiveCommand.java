@@ -55,7 +55,8 @@ public class GiveCommand implements IWarpCommand
         }
 
         WarpType type = WarpType.fromString(warpTypeString);
-        if(type == null)
+
+        if(type == WarpType.UNKNOWN)
         {
             sender.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + ChatColor.WHITE + warpTypeString);
             return;

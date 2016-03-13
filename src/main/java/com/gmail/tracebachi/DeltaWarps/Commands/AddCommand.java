@@ -79,7 +79,7 @@ public class AddCommand implements IWarpCommand
 
         WarpType type = WarpType.fromString(warpTypeString);
 
-        if(type == null)
+        if(type == WarpType.UNKNOWN)
         {
             player.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + ChatColor.WHITE + warpTypeString);
             return;
