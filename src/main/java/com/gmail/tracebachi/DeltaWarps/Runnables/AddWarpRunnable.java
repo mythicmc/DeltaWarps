@@ -105,7 +105,8 @@ public class AddWarpRunnable implements Runnable
                     else
                     {
                         insertWarp(connection);
-                        sendMessage(sender, Prefixes.SUCCESS + "Created a new warp named " +
+                        sendMessage(sender, Prefixes.SUCCESS + "Created a new " +
+                            Prefixes.input(warp.getType()) + " warp named " +
                             Prefixes.input(warp.getName()));
                     }
                 }
