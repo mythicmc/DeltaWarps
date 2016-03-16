@@ -142,13 +142,20 @@ public class AddCommand implements IWarpCommand
 
     private GroupLimits getGroupLimitsForSender(Player player)
     {
+        int normalLimit = 0;
+        int factionLimit = 0;
+
         for(Map.Entry<String, GroupLimits> entry : groupLimits.entrySet())
         {
+            GroupLimits limits = entry.getValue();
+
             if(player.hasPermission("DeltaWarps.Group." + entry.getKey()))
             {
-                return entry.getValue();
+                normalLimit = Math.max(normalLimit, limits.getNormal());
+                factionLimit = Math.max(factionLimit, limits.getFaction());
             }
         }
-        return new GroupLimits(0, 0);
+
+        return new GroupLimits(normalLimit, factionLimit);
     }
 }
