@@ -18,13 +18,17 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.gmail.tracebachi.DeltaWarps.Settings;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -45,6 +49,10 @@ public class GetWarpInfoRunnable implements Runnable
 
     public GetWarpInfoRunnable(String sender, String warpName, boolean canSeeCoords, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(warpName, "Warp name cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.sender = sender.toLowerCase();
         this.warpName = warpName.toLowerCase();
         this.canSeeCoords = canSeeCoords;
@@ -54,7 +62,7 @@ public class GetWarpInfoRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
@@ -73,8 +81,7 @@ public class GetWarpInfoRunnable implements Runnable
 
                         if(canSeeCoords)
                         {
-                            sendMessages(sender, new String[]
-                            {
+                            sendMessages(plugin, sender, Arrays.asList(
                                 Prefixes.INFO + "Warp information for " + Prefixes.input(warpName),
                                 Prefixes.INFO + "X: " + Prefixes.input(x),
                                 Prefixes.INFO + "Y: " + Prefixes.input(y),
@@ -82,67 +89,29 @@ public class GetWarpInfoRunnable implements Runnable
                                 Prefixes.INFO + "Type: " + Prefixes.input(type),
                                 Prefixes.INFO + "Owner: " + Prefixes.input(owner),
                                 Prefixes.INFO + "Server: " + Prefixes.input(server)
-                            });
+                            ));
                         }
                         else
                         {
-                            sendMessages(sender, new String[]
-                            {
+                            sendMessages(plugin, sender, Arrays.asList(
                                 Prefixes.INFO + "Warp information for " + Prefixes.input(warpName),
                                 Prefixes.INFO + "Type: " + Prefixes.input(type),
                                 Prefixes.INFO + "Owner: " + Prefixes.input(owner),
                                 Prefixes.INFO + "Server: " + Prefixes.input(server)
-                            });
+                            ));
                         }
                     }
                     else
                     {
-                        sendMessage(sender, Prefixes.FAILURE + Prefixes.input(warpName) + " does not exist.");
+                        sendMessage(plugin, sender, Prefixes.FAILURE + Prefixes.input(warpName) + " does not exist.");
                     }
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
+            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
         }
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            Player player = Bukkit.getPlayer(name);
-            if(player != null && player.isOnline())
-            {
-                player.sendMessage(message);
-            }
-        });
-    }
-
-    private void sendMessages(String name, String[] messages)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                for(String message : messages)
-                {
-                    Bukkit.getConsoleSender().sendMessage(message);
-                }
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    for(String message : messages)
-                    {
-                        player.sendMessage(message);
-                    }
-                }
-            }
-        });
     }
 }

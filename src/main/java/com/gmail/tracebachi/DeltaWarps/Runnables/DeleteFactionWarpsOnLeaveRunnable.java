@@ -18,13 +18,15 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.gmail.tracebachi.DeltaWarps.Settings;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -45,6 +47,10 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
 
     public DeleteFactionWarpsOnLeaveRunnable(String playerName, String serverName, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(playerName, "Player name cannot be null.");
+        Preconditions.checkNotNull(serverName, "Server name cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.playerName = playerName.toLowerCase();
         this.serverName = serverName;
         this.plugin = plugin;
@@ -53,7 +59,7 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             Integer playerId = selectPlayer(connection);
 
@@ -61,14 +67,14 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
             {
                 int warpsChanged = updateWarps(playerId, connection);
 
-                sendMessage(playerName, Prefixes.INFO + "Deleted " +
+                sendMessage(plugin, playerName, Prefixes.INFO + "Deleted " +
                     Prefixes.input(warpsChanged) +
                     " warps due to you leaving your faction.");
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(playerName, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
+            sendMessage(plugin, playerName, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
         }
     }
@@ -98,24 +104,5 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
             statement.setString(2, serverName);
             return statement.executeUpdate();
         }
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                Bukkit.getConsoleSender().sendMessage(message);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    player.sendMessage(message);
-                }
-            }
-        });
     }
 }

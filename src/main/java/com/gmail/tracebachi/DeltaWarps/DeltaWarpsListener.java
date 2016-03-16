@@ -16,6 +16,8 @@
  */
 package com.gmail.tracebachi.DeltaWarps;
 
+import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent;
 import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteFactionWarpsOnLeaveRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
@@ -27,8 +29,10 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,22 +43,41 @@ import static com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent.DELT
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
  */
-public class DeltaWarpsListener implements Listener
+public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
 {
     private static final String WARP_CHANNEL = "DW-Warp";
 
     private final String serverName;
     private HashMap<String, WarpRequest> warpRequests = new HashMap<>();
+    private BukkitTask cleanupTask;
     private DeltaWarps plugin;
 
     public DeltaWarpsListener(String serverName, DeltaWarps plugin)
     {
         this.serverName = serverName;
         this.plugin = plugin;
+
+        cleanupTask = Bukkit.getScheduler().runTaskTimer(plugin, this::cleanup, 40, 40);
     }
 
+    @Override
+    public void register()
+    {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    public void unregister()
+    {
+        HandlerList.unregisterAll(this);
+    }
+
+    @Override
     public void shutdown()
     {
+        cleanupTask.cancel();
+        cleanupTask = null;
+
         warpRequests.clear();
         warpRequests = null;
         plugin = null;

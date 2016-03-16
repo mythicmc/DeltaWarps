@@ -20,20 +20,15 @@ import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
 import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-
-import java.util.HashMap;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
 public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
 {
-    private HashMap<String, GroupLimits> groupLimits = new HashMap<>();
     private UseCommand useCommand;
     private AddCommand addCommand;
     private RemoveCommand removeCommand;
@@ -45,18 +40,9 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
 
     public WarpCommand(String serverName, DeltaWarps plugin)
     {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("GroupLimits");
-
-        for(String groupName : section.getKeys(false))
-        {
-            int normalLimit = section.getInt(groupName + ".Normal", 0);
-            int factionLimit = section.getInt(groupName + ".Faction", 0);
-            groupLimits.put(groupName, new GroupLimits(normalLimit, factionLimit));
-        }
-
         this.plugin = plugin;
         this.useCommand = new UseCommand(plugin);
-        this.addCommand = new AddCommand(serverName, groupLimits, plugin);
+        this.addCommand = new AddCommand(serverName, plugin);
         this.removeCommand = new RemoveCommand(plugin);
         this.moveCommand = new MoveCommand(serverName, plugin);
         this.infoCommand = new InfoCommand(serverName, plugin);
@@ -95,9 +81,6 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         giveCommand.shutdown();
         giveCommand = null;
         plugin = null;
-
-        groupLimits.clear();
-        groupLimits = null;
     }
 
     @Override

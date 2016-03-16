@@ -18,13 +18,15 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -44,6 +46,10 @@ public class AddServerWarpRunnable implements Runnable
 
     public AddServerWarpRunnable(String sender, Warp warp, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(warp, "Warp cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.sender = sender.toLowerCase();
         this.warp = warp;
         this.plugin = plugin;
@@ -52,7 +58,7 @@ public class AddServerWarpRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             try(PreparedStatement statement = connection.prepareStatement(INSERT_WARP))
             {
@@ -66,7 +72,7 @@ public class AddServerWarpRunnable implements Runnable
                 statement.setString(8, warp.getServer());
                 statement.execute();
 
-                sendMessage(sender, Prefixes.SUCCESS + "Created server warp " +
+                sendMessage(plugin, sender, Prefixes.SUCCESS + "Created server warp " +
                     Prefixes.input(warp.getName()));
             }
         }
@@ -74,7 +80,7 @@ public class AddServerWarpRunnable implements Runnable
         {
             if(ex.getErrorCode() == WARP_NAME_EXISTS)
             {
-                sendMessage(sender, Prefixes.FAILURE +
+                sendMessage(plugin, sender, Prefixes.FAILURE +
                     "Failed to create warp. Name is already in use.");
             }
             else
@@ -82,24 +88,5 @@ public class AddServerWarpRunnable implements Runnable
                 ex.printStackTrace();
             }
         }
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                Bukkit.getConsoleSender().sendMessage(message);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    player.sendMessage(message);
-                }
-            }
-        });
     }
 }

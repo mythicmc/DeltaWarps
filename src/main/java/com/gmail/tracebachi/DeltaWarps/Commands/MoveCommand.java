@@ -19,11 +19,11 @@ package com.gmail.tracebachi.DeltaWarps.Commands;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.MoveWarpRunnable;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
-import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -60,37 +60,51 @@ public class MoveCommand implements IWarpCommand
         }
 
         Player player = (Player) sender;
-        if(!sender.hasPermission("DeltaWarps.Player.Move"))
+
+        if(!sender.hasPermission("DeltaWarps.Move"))
         {
-            player.sendMessage(Prefixes.FAILURE + "You do not have permission to move warps.");
+            player.sendMessage(Settings.noPermission("DeltaWarps.Move"));
             return;
         }
 
-        if(args[0].length() >= 30)
+        if(!Settings.isWarpEditingEnabled() && !player.hasPermission("DeltaWarps.Staff.Move"))
+        {
+            player.sendMessage(Prefixes.FAILURE + "Moving warps is not enabled on this server.");
+            return;
+        }
+
+        if(reserved.contains(warpName))
+        {
+            player.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            return;
+        }
+
+        if(args[0].length() > 31)
         {
             player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;
         }
 
-        MPlayer mPlayer = MPlayer.get(player);
-        String playerFactionId = mPlayer.getFactionId();
-        PS locationPS = PS.valueOf(player.getLocation());
-        Faction facAtPos = BoardColl.get().getFactionAt(locationPS);
-        String factionAtPosId = facAtPos.getId();
+        Warp warp;
+        MoveWarpRunnable runnable;
 
-        if(!facAtPos.isNone())
+        if(Settings.isFactionsEnabled())
         {
-            if(!playerFactionId.equals(facAtPos.getId()))
-            {
-                player.sendMessage(Prefixes.FAILURE +
-                    "Warps can only be created on land owned by your faction or wilderness.");
-                return;
-            }
+            PS locationPS = PS.valueOf(player.getLocation());
+            Faction facAtPos = BoardColl.get().getFactionAt(locationPS);
+            String factionAtPosId = facAtPos.getId();
+
+            warp = new Warp(warpName, player.getLocation(), WarpType.FACTION, factionAtPosId, serverName);
+            runnable = new MoveWarpRunnable(sender.getName(), warp,
+                sender.hasPermission("DeltaWarps.Staff.Move"), plugin);
+        }
+        else
+        {
+            warp = new Warp(warpName, player.getLocation(), WarpType.PRIVATE, null, serverName);
+            runnable = new MoveWarpRunnable(sender.getName(), warp,
+                sender.hasPermission("DeltaWarps.Staff.Move"), plugin);
         }
 
-        Warp warp = new Warp(warpName, player.getLocation(), WarpType.PRIVATE, playerFactionId, serverName);
-        MoveWarpRunnable runnable = new MoveWarpRunnable(sender.getName(), playerFactionId,
-            factionAtPosId, warp, sender.hasPermission("DeltaWarps.Staff.Move"), plugin);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 }

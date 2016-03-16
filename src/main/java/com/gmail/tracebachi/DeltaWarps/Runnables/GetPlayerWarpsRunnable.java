@@ -18,9 +18,10 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
+import com.gmail.tracebachi.DeltaWarps.Settings;
+import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,13 +30,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
+
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
 public class GetPlayerWarpsRunnable implements Runnable
 {
+    private static final String SELECT_PLAYER =
+        " SELECT normal, faction" +
+        " FROM deltawarps_player" +
+        " WHERE name = ?;";
     private static final String SELECT_PLAYER_WARPS =
-        " SELECT deltawarps_warp.name, server, type, deltawarps_player.normal, deltawarps_player.faction" +
+        " SELECT name, server, type" +
         " FROM deltawarps_warp" +
         " INNER JOIN deltawarps_player" +
         " ON deltawarps_player.id = deltawarps_warp.ownerId" +
@@ -43,13 +51,20 @@ public class GetPlayerWarpsRunnable implements Runnable
 
     private final String sender;
     private final String player;
+    private final GroupLimits groupLimits;
     private final boolean canSeePrivateWarps;
     private final DeltaWarps plugin;
 
-    public GetPlayerWarpsRunnable(String sender, String player, boolean canSeePrivateWarps, DeltaWarps plugin)
+    public GetPlayerWarpsRunnable(String sender, String player, GroupLimits groupLimits,
+        boolean canSeePrivateWarps, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(player, "Player cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.sender = sender.toLowerCase();
         this.player = player.toLowerCase();
+        this.groupLimits = groupLimits;
         this.canSeePrivateWarps = canSeePrivateWarps || sender.equalsIgnoreCase(player);
         this.plugin = plugin;
     }
@@ -57,31 +72,58 @@ public class GetPlayerWarpsRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
+            Integer counter = 0;
+            List<String> messages = new ArrayList<>(4);
+
+            messages.add(Prefixes.INFO + "Player warp information for " + Prefixes.input(player));
+
+            try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER))
+            {
+                statement.setString(1, player);
+
+                try(ResultSet resultSet = statement.executeQuery())
+                {
+                    String normalLimit = (groupLimits == null) ? "<group>" : String.valueOf(groupLimits.getNormal());
+                    String factionLimit = (groupLimits == null) ? "<group>" : String.valueOf(groupLimits.getFaction());
+                    String normalExtra = "0";
+                    String factionExtra = "0";
+
+                    if(resultSet.next())
+                    {
+                        normalExtra = String.valueOf(resultSet.getShort("normal"));
+                        factionExtra = String.valueOf(resultSet.getShort("faction"));
+                    }
+
+                    messages.add(Prefixes.INFO + "Available Warps:");
+                    messages.add(Prefixes.INFO +
+                        "Normal: " +
+                        Prefixes.input(normalLimit + " + " + normalExtra) +
+                        ", Faction: " +
+                        Prefixes.input(factionLimit + " + " + factionExtra));
+                    messages.add(Prefixes.INFO + "Owned Warps:");
+                }
+            }
+
             try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER_WARPS))
             {
                 statement.setString(1, player);
 
                 try(ResultSet resultSet = statement.executeQuery())
                 {
-                    short normal = 0;
-                    short faction = 0;
-                    List<String> messages = new ArrayList<>(4);
-                    messages.add(Prefixes.INFO + "Player warp information for " + Prefixes.input(player));
-
                     while(resultSet.next())
                     {
-                        String name = resultSet.getString("deltawarps_warp.name");
+                        String name = resultSet.getString("name");
                         String server = resultSet.getString("server");
                         WarpType type = WarpType.fromString(resultSet.getString("type"));
 
-                        normal = resultSet.getShort("deltawarps_player.normal");
-                        faction = resultSet.getShort("deltawarps_player.faction");
+                        counter += 1;
 
                         if(type == WarpType.PRIVATE && canSeePrivateWarps)
                         {
                             messages.add(Prefixes.INFO +
+                                Prefixes.input(counter) + ". " +
                                 Prefixes.input(name) + " on " +
                                 Prefixes.input(server) + ", " +
                                 Prefixes.input(type.name().toLowerCase()));
@@ -89,55 +131,21 @@ public class GetPlayerWarpsRunnable implements Runnable
                         else
                         {
                             messages.add(Prefixes.INFO +
+                                Prefixes.input(counter) + ". " +
                                 Prefixes.input(name) + " on " +
                                 Prefixes.input(server) + ", " +
                                 Prefixes.input(type.name().toLowerCase()));
                         }
                     }
 
-                    messages.add(1, Prefixes.INFO + "Normal (+" +
-                        Prefixes.input(normal) + "), Faction (+" +
-                        Prefixes.input(faction) + ")");
-
-                    sendMessages(sender, messages);
+                    sendMessages(plugin, sender, messages);
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
+            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
         }
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            Player player = Bukkit.getPlayer(name);
-            if(player != null && player.isOnline())
-            {
-                player.sendMessage(message);
-            }
-        });
-    }
-
-    private void sendMessages(String name, List<String> messages)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                messages.forEach(Bukkit.getConsoleSender()::sendMessage);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    messages.forEach(player::sendMessage);
-                }
-            }
-        });
     }
 }

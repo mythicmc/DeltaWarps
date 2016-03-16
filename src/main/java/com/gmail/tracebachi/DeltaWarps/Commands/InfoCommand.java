@@ -21,11 +21,12 @@ import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetFactionWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetPlayerWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetWarpInfoRunnable;
+import com.gmail.tracebachi.DeltaWarps.Settings;
+import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.google.common.base.Preconditions;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -67,32 +68,43 @@ public class InfoCommand implements IWarpCommand
         }
         else if(type.startsWith("p"))
         {
-            String playerName = (args.length >= 3) ? args[2] : sender.getName();
-            getPlayerWarps(sender, playerName);
+            if(args.length >= 3)
+            {
+                getPlayerWarps(sender, args[2]);
+            }
+            else
+            {
+                getPlayerWarps(sender, sender.getName());
+            }
         }
         else if(type.startsWith("f"))
         {
+            if(!Settings.isFactionsEnabled())
+            {
+                sender.sendMessage(Prefixes.FAILURE + "Factions is not enabled on this server.");
+                return;
+            }
+
             if(!(sender instanceof Player))
             {
-                if(args.length >= 3)
+                if(args.length < 3)
+                {
+                    sender.sendMessage(Prefixes.FAILURE + "No faction specified.");
+                }
+                else
                 {
                     String factionName = args[2];
                     Faction faction = FactionColl.get().getByName(factionName);
 
-                    if(faction != null)
+                    if(faction == null)
                     {
-                        getFactionWarps(sender, faction);
+                        sender.sendMessage(Prefixes.FAILURE + Prefixes.input(factionName) +
+                            " does not exist on this server.");
                     }
                     else
                     {
-                        sender.sendMessage(Prefixes.FAILURE + "Faction " +
-                            ChatColor.WHITE + factionName +
-                            ChatColor.GRAY + " does not exist on this server.");
+                        getFactionWarps(sender, faction);
                     }
-                }
-                else
-                {
-                    sender.sendMessage(Prefixes.FAILURE + "No faction specified.");
                 }
             }
             else
@@ -102,15 +114,14 @@ public class InfoCommand implements IWarpCommand
                     String factionName = args[2];
                     Faction faction = FactionColl.get().getByName(factionName);
 
-                    if(faction != null)
+                    if(faction == null)
                     {
-                        getFactionWarps(sender, faction);
+                        sender.sendMessage(Prefixes.FAILURE + Prefixes.input(factionName) +
+                            " does not exist on this server.");
                     }
                     else
                     {
-                        sender.sendMessage(Prefixes.FAILURE + "Faction " +
-                            ChatColor.WHITE + factionName +
-                            ChatColor.GRAY + " does not exist on this server.");
+                        getFactionWarps(sender, faction);
                     }
                 }
                 else
@@ -135,8 +146,15 @@ public class InfoCommand implements IWarpCommand
 
     private void getPlayerWarps(CommandSender sender, String playerName)
     {
+        GroupLimits groupLimits = null;
+
+        if(sender instanceof Player && sender.getName().equals(playerName))
+        {
+            groupLimits = Settings.getGroupLimitsForSender((Player) sender);
+        }
+
         GetPlayerWarpsRunnable runnable = new GetPlayerWarpsRunnable(sender.getName(), playerName,
-            sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
+            groupLimits, sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 

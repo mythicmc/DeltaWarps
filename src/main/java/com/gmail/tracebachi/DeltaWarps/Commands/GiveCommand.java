@@ -19,8 +19,8 @@ package com.gmail.tracebachi.DeltaWarps.Commands;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.SyncGiveWarpsRunnable;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -50,7 +50,7 @@ public class GiveCommand implements IWarpCommand
 
         if(!sender.hasPermission("DeltaWarps.Staff.Give"))
         {
-            sender.sendMessage(Prefixes.FAILURE + "You do not have permission to give warps.");
+            sender.sendMessage(Settings.noPermission("DeltaWarps.Staff.Give"));
             return;
         }
 
@@ -58,18 +58,19 @@ public class GiveCommand implements IWarpCommand
 
         if(type == WarpType.UNKNOWN)
         {
-            sender.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + ChatColor.WHITE + warpTypeString);
+            sender.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + Prefixes.input(warpTypeString));
             return;
         }
 
         Integer amount = parseInt(amountString);
+
         if(amount == null || amount == 0)
         {
-            sender.sendMessage(Prefixes.FAILURE + "Invalid number: " + ChatColor.WHITE + amountString);
+            sender.sendMessage(Prefixes.FAILURE + "Invalid number: " + Prefixes.input(amountString));
             return;
         }
 
-        SyncGiveWarpsRunnable runnable = new SyncGiveWarpsRunnable(sender, receiver, type, amount, plugin);
+        SyncGiveWarpsRunnable runnable = new SyncGiveWarpsRunnable(sender, receiver, type, amount);
         plugin.getServer().getScheduler().runTask(plugin, runnable);
     }
 

@@ -18,13 +18,15 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.gmail.tracebachi.DeltaWarps.Settings;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -49,6 +51,10 @@ public class DeleteWarpRunnable implements Runnable
 
     public DeleteWarpRunnable(String sender, String warpName, boolean ignoreOwner, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(warpName, "Warp name cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.sender = sender.toLowerCase();
         this.warpName = warpName.toLowerCase();
         this.ignoreOwner = ignoreOwner;
@@ -58,7 +64,7 @@ public class DeleteWarpRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             String warpOwner = selectWarpOwner(connection);
 
@@ -67,23 +73,24 @@ public class DeleteWarpRunnable implements Runnable
                 if(ignoreOwner || warpOwner.equals(sender))
                 {
                     deleteWarp(connection);
-                    sendMessage(sender, Prefixes.SUCCESS + "Deleted warp " +
+
+                    sendMessage(plugin, sender, Prefixes.SUCCESS + "Deleted warp " +
                         Prefixes.input(warpName));
                 }
                 else
                 {
-                    sendMessage(sender, Prefixes.FAILURE + "You do not have permission to delete " +
+                    sendMessage(plugin, sender, Prefixes.FAILURE + "You do not have permission to delete " +
                         Prefixes.input(warpName));
                 }
             }
             else
             {
-                sendMessage(sender, Prefixes.FAILURE + Prefixes.input(warpName) + " does not exist.");
+                sendMessage(plugin, sender, Prefixes.FAILURE + Prefixes.input(warpName) + " does not exist.");
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
+            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
         }
     }
@@ -112,24 +119,5 @@ public class DeleteWarpRunnable implements Runnable
             statement.setString(1, warpName);
             statement.executeUpdate();
         }
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                Bukkit.getConsoleSender().sendMessage(message);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    player.sendMessage(message);
-                }
-            }
-        });
     }
 }

@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps;
 
-import com.gmail.tracebachi.DbShare.DbShare;
 import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedis;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
@@ -64,7 +63,6 @@ public class DeltaWarps extends JavaPlugin
         " (id, name, normal, faction)" +
         " VALUES(1, '!DeltaWarps!', 65535, 65535);";
 
-    private String databaseName;
     private DeltaWarpsListener warpsListener;
     private DeltaRedisApi deltaRedisApi;
     private DeltaEssentials deltaEssentialsPlugin;
@@ -80,58 +78,58 @@ public class DeltaWarps extends JavaPlugin
     @Override
     public void onEnable()
     {
+        reloadConfig();
+        Settings.read(getConfig());
+
         DeltaRedis deltaRedis = (DeltaRedis) getServer().getPluginManager().getPlugin("DeltaRedis");
         deltaEssentialsPlugin = (DeltaEssentials) getServer().getPluginManager().getPlugin("DeltaEssentials");
         deltaRedisApi = deltaRedis.getDeltaRedisApi();
-        databaseName = getConfig().getString("Database");
 
-        if(checkDatabase() && createTables())
-        {
-            warpCommand = new WarpCommand(deltaRedisApi.getServerName(), this);
-            getCommand("warp").setExecutor(warpCommand);
-            sWarpCommand = new SWarpCommand(deltaRedisApi.getServerName(), this);
-            getCommand("swarp").setExecutor(sWarpCommand);
-
-            warpsListener = new DeltaWarpsListener(deltaRedisApi.getServerName(), this);
-            getServer().getPluginManager().registerEvents(warpsListener, this);
-
-            getServer().getScheduler().runTaskTimer(this, () -> warpsListener.cleanup(), 40, 40);
-        }
-        else
+        if(!createTables())
         {
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
+
+        warpCommand = new WarpCommand(deltaRedisApi.getServerName(), this);
+        warpCommand.register();
+
+        sWarpCommand = new SWarpCommand(deltaRedisApi.getServerName(), this);
+        sWarpCommand.register();
+
+        warpsListener = new DeltaWarpsListener(deltaRedisApi.getServerName(), this);
+        warpsListener.register();
     }
 
     @Override
     public void onDisable()
     {
-        getServer().getScheduler().cancelTasks(this);
+        warpsListener.shutdown();
+        warpsListener = null;
 
-        if(warpsListener != null)
-        {
-            warpsListener.shutdown();
-            warpsListener = null;
-        }
+        sWarpCommand.shutdown();
+        sWarpCommand = null;
 
-        if(sWarpCommand != null)
-        {
-            getCommand("swarp").setExecutor(null);
-            sWarpCommand.shutdown();
-            sWarpCommand = null;
-        }
-
-        if(warpCommand != null)
-        {
-            getCommand("warp").setExecutor(null);
-            warpCommand.shutdown();
-            warpCommand = null;
-        }
+        warpCommand.shutdown();
+        warpCommand = null;
     }
 
-    public Connection getDatabaseConnection() throws SQLException
+    public void info(String input)
     {
-        return DbShare.getDataSource(databaseName).getConnection();
+        getLogger().info(input);
+    }
+
+    public void severe(String input)
+    {
+        getLogger().severe(input);
+    }
+
+    public void debug(String input)
+    {
+        if(Settings.isDebugEnabled())
+        {
+            getLogger().info("[Debug] " + input);
+        }
     }
 
     public void useWarpSync(String sender, String warper, String warpOwner, Warp warp)
@@ -140,23 +138,13 @@ public class DeltaWarps extends JavaPlugin
             deltaRedisApi, deltaEssentialsPlugin, sender, warper, warpOwner, warp));
     }
 
-    private boolean checkDatabase()
-    {
-        if(DbShare.getDataSource(databaseName) == null)
-        {
-            getLogger().severe("The specified database does not exist. Shutting down ...");
-            return false;
-        }
-        return true;
-    }
-
     private boolean createTables()
     {
-        try(Connection connection = getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             try(PreparedStatement statement = connection.prepareStatement(CREATE_PLAYER_TABLE))
             {
-                getLogger().info("Creating player table ...");
+                info("Creating player table ...");
                 statement.execute();
             }
 
@@ -173,14 +161,14 @@ public class DeltaWarps extends JavaPlugin
 
             try(PreparedStatement statement = connection.prepareStatement(CREATE_WARP_TABLE))
             {
-                getLogger().info("Creating warps table ...");
+                info("Creating warps table ...");
                 statement.execute();
             }
             return true;
         }
         catch(SQLException ex)
         {
-            getLogger().severe("Failed to build required tables.");
+            severe("Failed to build required tables.");
             ex.printStackTrace();
             return false;
         }

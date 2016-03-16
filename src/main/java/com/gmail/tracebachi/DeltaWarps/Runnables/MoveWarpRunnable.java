@@ -18,15 +18,17 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -34,10 +36,10 @@ import java.sql.SQLException;
 public class MoveWarpRunnable implements Runnable
 {
     private static final String SELECT_WARP =
-        " SELECT type, deltawarps_player.name" +
+        " SELECT type, faction, deltawarps_player.name" +
         " FROM deltawarps_warp" +
         " INNER JOIN deltawarps_player" +
-        " ON deltawarps_warp.owner_id = deltawarps_player.id" +
+        " ON deltawarps_warp.ownerId = deltawarps_player.id" +
         " WHERE deltawarps_warp.name = ?;";
     private static final String UPDATE_WARP =
         " UPDATE deltawarps_warp" +
@@ -46,18 +48,17 @@ public class MoveWarpRunnable implements Runnable
         " LIMIT 1;";
 
     private final String sender;
-    private final String playerFactionId;
-    private final String factionIdAtPos;
     private final Warp warp;
     private final boolean ignoreOwner;
     private final DeltaWarps plugin;
 
-    public MoveWarpRunnable(String sender, String playerFactionId, String factionAtPosId,
-        Warp warp, boolean ignoreOwner, DeltaWarps plugin)
+    public MoveWarpRunnable(String sender, Warp warp, boolean ignoreOwner, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(warp, "Warp cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.sender = sender.toLowerCase();
-        this.playerFactionId = playerFactionId;
-        this.factionIdAtPos = factionAtPosId;
         this.warp = warp;
         this.ignoreOwner = ignoreOwner;
         this.plugin = plugin;
@@ -66,7 +67,7 @@ public class MoveWarpRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
@@ -80,14 +81,14 @@ public class MoveWarpRunnable implements Runnable
                     }
                     else
                     {
-                        sendMessage(sender, Prefixes.FAILURE + "That warp does not exist.");
+                        sendMessage(plugin, sender, Prefixes.FAILURE + "That warp does not exist.");
                     }
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(sender, Prefixes.FAILURE + "Something went wrong. " +
+            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. " +
                 "Please report this to the developer.");
             ex.printStackTrace();
         }
@@ -96,55 +97,43 @@ public class MoveWarpRunnable implements Runnable
     private void onWarpFound(ResultSet resultSet, Connection connection) throws SQLException
     {
         WarpType originalType = WarpType.fromString(resultSet.getString("type"));
+        String originalFaction = resultSet.getString("faction");
         String owner = resultSet.getString("deltawarps_player.name");
-        Warp newWarp;
 
         if(!ignoreOwner && !owner.equals(sender))
         {
-            sendMessage(sender, Prefixes.FAILURE + "You do not have access to move that warp.");
+            sendMessage(plugin, sender, Prefixes.FAILURE + "You do not have access to move that warp.");
             return;
         }
 
         if(originalType == WarpType.FACTION)
         {
-            if(owner.equals(sender))
+            if(!Settings.isFactionsEnabled())
             {
-                if(playerFactionId.equals(factionIdAtPos))
-                {
-                    newWarp = new Warp(warp.getName(),
-                        warp.getX(), warp.getY(), warp.getZ(),
-                        warp.getYaw(), warp.getPitch(), warp.getWorld(),
-                        WarpType.FACTION, playerFactionId, warp.getServer());
+                sendMessage(plugin, sender, Prefixes.FAILURE + "Factions is not enabled on this server.");
+                return;
+            }
 
-                    updateWarp(newWarp, connection);
-                    sendMessage(sender, Prefixes.SUCCESS + "Moved faction warp to new location.");
-                }
-                else
-                {
-                    sendMessage(sender, Prefixes.FAILURE + "You cannot move a faction warp " +
-                        "to land that does not belong to your faction.");
-                }
+            if(warp.getFaction() != null && warp.getFaction().equals(originalFaction))
+            {
+                updateWarp(warp, connection);
+                sendMessage(plugin, sender, Prefixes.SUCCESS + "Moved faction warp to new location.");
             }
             else
             {
-                newWarp = new Warp(warp.getName(),
-                    warp.getX(), warp.getY(), warp.getZ(),
-                    warp.getYaw(), warp.getPitch(), warp.getWorld(),
-                    WarpType.PRIVATE, null, warp.getServer());
-
-                updateWarp(newWarp, connection);
-                sendMessage(sender, Prefixes.SUCCESS + "Moved faction warp to new location and made private.");
+                sendMessage(plugin, sender, Prefixes.FAILURE + "You cannot move a faction warp " +
+                    "to land that does not belong to your faction.");
             }
         }
         else
         {
-            newWarp = new Warp(warp.getName(),
+            Warp newWarp = new Warp(warp.getName(),
                 warp.getX(), warp.getY(), warp.getZ(),
                 warp.getYaw(), warp.getPitch(), warp.getWorld(),
                 originalType, null, warp.getServer());
 
             updateWarp(newWarp, connection);
-            sendMessage(sender, Prefixes.SUCCESS + "Moved normal warp to new location.");
+            sendMessage(plugin, sender, Prefixes.SUCCESS + "Moved normal warp to new location.");
         }
     }
 
@@ -164,24 +153,5 @@ public class MoveWarpRunnable implements Runnable
             statement.setString(10, newWarp.getName());
             return statement.executeUpdate();
         }
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                Bukkit.getConsoleSender().sendMessage(message);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    player.sendMessage(message);
-                }
-            }
-        });
     }
 }

@@ -3,6 +3,9 @@
 # DbShare Database name
 Database: Main
 
+# Allow warps to be created, removed, or moved on this server
+WarpEditing: True
+
 # Default limits on the number of warps for a group.
 # Example: Add the "DeltaWarps.Group.Example" permission
 #          to add a player to a group.

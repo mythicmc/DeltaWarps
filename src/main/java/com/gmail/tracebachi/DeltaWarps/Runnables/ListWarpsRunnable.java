@@ -18,8 +18,8 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.gmail.tracebachi.DeltaWarps.Settings;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -47,6 +49,9 @@ public class ListWarpsRunnable implements Runnable
 
     public ListWarpsRunnable(String sender, int pageOffset, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.sender = sender.toLowerCase();
         this.pageOffset = pageOffset;
         this.plugin = plugin;
@@ -55,7 +60,7 @@ public class ListWarpsRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
@@ -72,34 +77,15 @@ public class ListWarpsRunnable implements Runnable
                         messages.add(name);
                     }
 
-                    sendMessages(sender, Arrays.asList(header, String.join(", ", messages)));
+                    sendMessages(plugin, sender, Arrays.asList(header, String.join(", ", messages)));
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessages(sender, Collections.singletonList(
+            sendMessages(plugin, sender, Collections.singletonList(
                 Prefixes.FAILURE + "Something went wrong. Please inform the developer."));
             ex.printStackTrace();
         }
-    }
-
-    private void sendMessages(String name, List<String> messages)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                messages.forEach(Bukkit.getConsoleSender()::sendMessage);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    messages.forEach(player::sendMessage);
-                }
-            }
-        });
     }
 }

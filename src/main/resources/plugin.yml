@@ -1,6 +1,6 @@
 name: DeltaWarps
 main: com.gmail.tracebachi.DeltaWarps.DeltaWarps
-version: 1.5
+version: 1.6
 author: Trace Bachi (tracebachi@gmail.com, BigBossZee)
 depend: [DeltaRedis, DeltaEssentials, DbShare, Factions]
 commands:
@@ -10,17 +10,17 @@ commands:
     description: Create a server warp (public, under the safezone faction).
 
 permissions:
-  DeltaWarps.Player.Use.Normal:
+  DeltaWarps.Use.Normal:
     description: Allows the user to use non-faction warps.
-  DeltaWarps.Player.Use.Faction:
+  DeltaWarps.Use.Faction:
     description: Allows the user to use faction warps.
-  DeltaWarps.Player.Add:
+  DeltaWarps.Add:
     description: Allows the user to add warps.
-  DeltaWarps.Player.Remove:
+  DeltaWarps.Remove:
     description: Allows the user to remove warps.
-  DeltaWarps.Player.Move:
+  DeltaWarps.Move:
     description: Allows the user to move warps.
-  DeltaWarps.Player.List:
+  DeltaWarps.List:
     description: Allows the user to list public warps.
   DeltaWarps.Staff.Use:
     description: Allows the user to use other players' warps.

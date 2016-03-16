@@ -53,16 +53,18 @@ public class UseCommand implements IWarpCommand
             }
 
             Player player = (Player) sender;
-            if(args[0].length() >= 30)
+
+            if(args[0].length() > 31)
             {
                 player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
                 return;
             }
 
-            boolean canUse = player.hasPermission("DeltaWarps.Player.Use.Normal");
-            boolean canUseFaction = player.hasPermission("DeltaWarps.Player.Use.Faction");
+            boolean canUse = player.hasPermission("DeltaWarps.Use.Normal");
+            boolean canUseFaction = player.hasPermission("DeltaWarps.Use.Faction");
+            boolean canUseSpecial = player.hasPermission("DeltaWarps.Use.Special." + args[0].toLowerCase());
 
-            if(!canUse && !canUseFaction)
+            if(!canUse && !canUseFaction && !canUseSpecial)
             {
                 player.sendMessage(Prefixes.FAILURE + "You do not have permission to use any warps.");
                 return;
@@ -87,7 +89,8 @@ public class UseCommand implements IWarpCommand
             }
 
             Player warper = Bukkit.getPlayer(args[1]);
-            if(warper == null || !warper.isOnline())
+
+            if(warper == null)
             {
                 sender.sendMessage(Prefixes.FAILURE + Prefixes.input(args[1]) + " is not online.");
                 return;

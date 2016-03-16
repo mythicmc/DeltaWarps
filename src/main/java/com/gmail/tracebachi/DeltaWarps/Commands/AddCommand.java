@@ -19,6 +19,7 @@ package com.gmail.tracebachi.DeltaWarps.Commands;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddWarpRunnable;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
@@ -26,13 +27,9 @@ import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -40,20 +37,17 @@ import java.util.Map;
 public class AddCommand implements IWarpCommand
 {
     private final String serverName;
-    private HashMap<String, GroupLimits> groupLimits;
     private DeltaWarps plugin;
 
-    public AddCommand(String serverName, HashMap<String, GroupLimits> groupLimits, DeltaWarps plugin)
+    public AddCommand(String serverName, DeltaWarps plugin)
     {
         this.serverName = serverName;
-        this.groupLimits = groupLimits;
         this.plugin = plugin;
     }
 
     @Override
     public void shutdown()
     {
-        this.groupLimits = null;
         this.plugin = null;
     }
 
@@ -71,9 +65,27 @@ public class AddCommand implements IWarpCommand
 
         Player player = (Player) sender;
 
-        if(!player.hasPermission("DeltaWarps.Player.Add"))
+        if(!player.hasPermission("DeltaWarps.Add"))
         {
-            player.sendMessage(Prefixes.FAILURE + "You do not have permission to add warps.");
+            player.sendMessage(Settings.noPermission("DeltaWarps.Add"));
+            return;
+        }
+
+        if(!Settings.isWarpEditingEnabled() && !player.hasPermission("DeltaWarps.Staff.Add"))
+        {
+            player.sendMessage(Prefixes.FAILURE + "Adding warps is not enabled on this server.");
+            return;
+        }
+
+        if(reserved.contains(warpName))
+        {
+            player.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            return;
+        }
+
+        if(warpName.length() > 31)
+        {
+            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;
         }
 
@@ -81,30 +93,26 @@ public class AddCommand implements IWarpCommand
 
         if(type == WarpType.UNKNOWN)
         {
-            player.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + ChatColor.WHITE + warpTypeString);
+            player.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + Prefixes.input(warpTypeString));
             return;
         }
 
-        if(warpName.length() >= 30)
-        {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
-            return;
-        }
-
-        if(reserved.contains(warpName))
-        {
-            player.sendMessage(Prefixes.FAILURE + "That is a reserved name.");
-            return;
-        }
-
-        String faction = null;
-        Location playerLocation = player.getLocation();
-        MPlayer mPlayer = MPlayer.get(player);
-        PS locationPS = PS.valueOf(playerLocation);
-        Faction facAtPos = BoardColl.get().getFactionAt(locationPS);
+        GroupLimits groupLimit = Settings.getGroupLimitsForSender(player);
+        Warp warp;
 
         if(type == WarpType.FACTION)
         {
+            if(!Settings.isFactionsEnabled())
+            {
+                player.sendMessage(Prefixes.FAILURE + "Factions is not enabled on this server.");
+                return;
+            }
+
+            Location playerLocation = player.getLocation();
+            MPlayer mPlayer = MPlayer.get(player);
+            PS locationPS = PS.valueOf(playerLocation);
+            Faction facAtPos = BoardColl.get().getFactionAt(locationPS);
+
             if(!mPlayer.hasFaction())
             {
                 player.sendMessage(Prefixes.FAILURE +
@@ -119,43 +127,14 @@ public class AddCommand implements IWarpCommand
                 return;
             }
 
-            faction = facAtPos.getId();
+            warp = new Warp(warpName, player.getLocation(), type, facAtPos.getId(), serverName);
         }
         else
         {
-            if(!facAtPos.isNone())
-            {
-                if(!mPlayer.getFactionId().equals(facAtPos.getId()))
-                {
-                    player.sendMessage(Prefixes.FAILURE +
-                        "Warps can only be created on land owned by your faction or wilderness.");
-                    return;
-                }
-            }
+            warp = new Warp(warpName, player.getLocation(), type, null, serverName);
         }
 
-        GroupLimits groupLimit = getGroupLimitsForSender(player);
-        Warp warp = new Warp(warpName, player.getLocation(), type, faction, serverName);
         AddWarpRunnable runnable = new AddWarpRunnable(sender.getName(), warp, groupLimit, plugin);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
-    }
-
-    private GroupLimits getGroupLimitsForSender(Player player)
-    {
-        int normalLimit = 0;
-        int factionLimit = 0;
-
-        for(Map.Entry<String, GroupLimits> entry : groupLimits.entrySet())
-        {
-            GroupLimits limits = entry.getValue();
-
-            if(player.hasPermission("DeltaWarps.Group." + entry.getKey()))
-            {
-                normalLimit = Math.max(normalLimit, limits.getNormal());
-                factionLimit = Math.max(factionLimit, limits.getFaction());
-            }
-        }
-
-        return new GroupLimits(normalLimit, factionLimit);
     }
 }

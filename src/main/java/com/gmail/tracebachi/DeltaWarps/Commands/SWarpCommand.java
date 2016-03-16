@@ -17,8 +17,11 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
+import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddServerWarpRunnable;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.command.Command;
@@ -29,7 +32,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
-public class SWarpCommand implements CommandExecutor
+public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
 {
     private final String serverName;
     private DeltaWarps plugin;
@@ -40,6 +43,19 @@ public class SWarpCommand implements CommandExecutor
         this.plugin = plugin;
     }
 
+    @Override
+    public void register()
+    {
+        plugin.getCommand("swarp").setExecutor(this);
+    }
+
+    @Override
+    public void unregister()
+    {
+        plugin.getCommand("swarp").setExecutor(null);
+    }
+
+    @Override
     public void shutdown()
     {
         plugin = null;
@@ -55,9 +71,10 @@ public class SWarpCommand implements CommandExecutor
         }
 
         Player player = (Player) sender;
+
         if(!player.hasPermission("DeltaWarps.Staff.ServerWarp"))
         {
-            player.sendMessage(Prefixes.FAILURE + "You do not have permission to add server warps.");
+            player.sendMessage(Settings.noPermission("DeltaWarps.Staff.ServerWarp"));
             return true;
         }
 
@@ -68,15 +85,16 @@ public class SWarpCommand implements CommandExecutor
         }
 
         String warpName = args[0].toLowerCase();
-        if(warpName.length() >= 30)
-        {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
-            return true;
-        }
 
         if(IWarpCommand.reserved.contains(warpName))
         {
-            player.sendMessage(Prefixes.FAILURE + "That is a reserved name.");
+            sender.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            return true;
+        }
+
+        if(warpName.length() > 31)
+        {
+            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
             return true;
         }
 

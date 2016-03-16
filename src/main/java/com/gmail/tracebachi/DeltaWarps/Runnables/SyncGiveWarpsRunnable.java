@@ -16,8 +16,9 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
+import com.google.common.base.Preconditions;
 import org.bukkit.command.CommandSender;
 
 import java.sql.Connection;
@@ -48,21 +49,23 @@ public class SyncGiveWarpsRunnable implements Runnable
     private final String receiver;
     private final WarpType type;
     private final int amount;
-    private final DeltaWarps plugin;
 
-    public SyncGiveWarpsRunnable(CommandSender sender, String receiver, WarpType type, int amount, DeltaWarps plugin)
+    public SyncGiveWarpsRunnable(CommandSender sender, String receiver, WarpType type, int amount)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(receiver, "Receiver cannot be null.");
+        Preconditions.checkNotNull(type, "Type cannot be null.");
+
         this.sender = sender;
         this.receiver = receiver.toLowerCase();
         this.type = type;
         this.amount = amount;
-        this.plugin = plugin;
     }
 
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             short currentNormal = 0;
             short currentFaction = 0;

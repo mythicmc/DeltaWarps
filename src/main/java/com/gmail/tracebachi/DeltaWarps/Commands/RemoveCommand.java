@@ -19,6 +19,7 @@ package com.gmail.tracebachi.DeltaWarps.Commands;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteWarpRunnable;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -44,13 +45,25 @@ public class RemoveCommand implements IWarpCommand
     {
         String warpName = args[1].toLowerCase();
 
-        if(!sender.hasPermission("DeltaWarps.Player.Remove"))
+        if(!sender.hasPermission("DeltaWarps.Remove"))
         {
-            sender.sendMessage(Prefixes.FAILURE + "You do not have permission to remove warps.");
+            sender.sendMessage(Settings.noPermission("DeltaWarps.Remove"));
             return;
         }
 
-        if(warpName.length() >= 30)
+        if(!Settings.isWarpEditingEnabled() && !sender.hasPermission("DeltaWarps.Staff.Remove"))
+        {
+            sender.sendMessage(Prefixes.FAILURE + "Removing warps is not enabled on this server.");
+            return;
+        }
+
+        if(reserved.contains(warpName))
+        {
+            sender.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            return;
+        }
+
+        if(warpName.length() > 31)
         {
             sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;

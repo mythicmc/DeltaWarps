@@ -16,9 +16,9 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.ListWarpsRunnable;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -42,13 +42,14 @@ public class ListCommand implements IWarpCommand
     @Override
     public void onCommand(CommandSender sender, String[] args)
     {
-        if(!sender.hasPermission("DeltaWarps.Player.List"))
+        if(!sender.hasPermission("DeltaWarps.List"))
         {
-            sender.sendMessage(Prefixes.FAILURE + "You do not have permission to list warps.");
+            sender.sendMessage(Settings.noPermission("DeltaWarps.List"));
             return;
         }
 
         int page = 0;
+
         if(args.length >= 2)
         {
             page = parseInt(args[1], 0);

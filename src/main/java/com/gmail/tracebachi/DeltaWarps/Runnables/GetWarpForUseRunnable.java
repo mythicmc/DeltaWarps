@@ -18,15 +18,17 @@ package com.gmail.tracebachi.DeltaWarps.Runnables;
 
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.google.common.base.Preconditions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -47,6 +49,11 @@ public class GetWarpForUseRunnable implements Runnable
 
     public GetWarpForUseRunnable(String sender, String warper, String warpName, DeltaWarps plugin)
     {
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(warper, "Warper cannot be null.");
+        Preconditions.checkNotNull(warpName, "Warp name cannot be null.");
+        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+
         this.sender = sender.toLowerCase();
         this.warper = warper;
         this.warpName = warpName.toLowerCase();
@@ -56,7 +63,7 @@ public class GetWarpForUseRunnable implements Runnable
     @Override
     public void run()
     {
-        try(Connection connection = plugin.getDatabaseConnection())
+        try(Connection connection = Settings.getDataSource().getConnection())
         {
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
@@ -73,7 +80,7 @@ public class GetWarpForUseRunnable implements Runnable
                     }
                     else
                     {
-                        sendMessage(sender, Prefixes.FAILURE + "There is no warp named " +
+                        sendMessage(plugin, sender, Prefixes.FAILURE + "There is no warp named " +
                             Prefixes.input(warpName));
                     }
                 }
@@ -81,7 +88,7 @@ public class GetWarpForUseRunnable implements Runnable
         }
         catch(SQLException ex)
         {
-            sendMessage(sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
+            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
         }
     }
@@ -99,24 +106,5 @@ public class GetWarpForUseRunnable implements Runnable
         String server = resultSet.getString("server");
 
         return new Warp(warpName, x, y, z, yaw, pitch, world, type, faction, server);
-    }
-
-    private void sendMessage(String name, String message)
-    {
-        Bukkit.getScheduler().runTask(plugin, () ->
-        {
-            if(name.equalsIgnoreCase("console"))
-            {
-                Bukkit.getConsoleSender().sendMessage(message);
-            }
-            else
-            {
-                Player player = Bukkit.getPlayer(name);
-                if(player != null && player.isOnline())
-                {
-                    player.sendMessage(message);
-                }
-            }
-        });
     }
 }

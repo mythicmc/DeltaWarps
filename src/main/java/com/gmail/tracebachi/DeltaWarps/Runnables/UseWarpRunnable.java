@@ -20,8 +20,10 @@ import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaWarps.PlayerWarpEvent;
+import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
+import com.google.common.base.Preconditions;
 import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.factions.entity.MPlayer;
@@ -48,6 +50,13 @@ public class UseWarpRunnable implements Runnable
     public UseWarpRunnable(DeltaRedisApi deltaRedisApi, DeltaEssentials deltaEssentialsPlugin,
         String sender, String warper, String warpOwner, Warp warp)
     {
+        Preconditions.checkNotNull(deltaRedisApi, "DeltaRedisAPI cannot be null.");
+        Preconditions.checkNotNull(deltaEssentialsPlugin, "DeltaEssentials cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender cannot be null.");
+        Preconditions.checkNotNull(warper, "Warper cannot be null.");
+        Preconditions.checkNotNull(warpOwner, "Warp owner cannot be null.");
+        Preconditions.checkNotNull(warp, "Warp cannot be null.");
+
         this.deltaRedisApi = deltaRedisApi;
         this.deltaEssentialsPlugin = deltaEssentialsPlugin;
         this.sender = sender;
@@ -63,45 +72,29 @@ public class UseWarpRunnable implements Runnable
 
         Player player = Bukkit.getPlayer(warper);
 
-        if(player != null)
-        {
-            String currentServerName = deltaRedisApi.getServerName();
-            boolean isOwner = player.getName().equalsIgnoreCase(warpOwner);
-            boolean canUseOthers = player.hasPermission("DeltaWarps.Staff.Use");
-            boolean canUseNormal = player.hasPermission("DeltaWarps.Player.Use.Normal") ||
-                canUseOthers || isForceWarpUse;
-            boolean canUseFaction = player.hasPermission("DeltaWarps.Player.Use.Faction") ||
-                canUseOthers || isForceWarpUse;
-
-            if(warp.getServer().equals(currentServerName))
-            {
-                onSameServerWarp(player, isOwner, canUseNormal, canUseFaction, canUseOthers);
-            }
-            else
-            {
-                onDifferentServerWarp(player, isOwner, canUseNormal, canUseOthers);
-            }
-        }
-        else
+        if(player == null)
         {
             if(isForceWarpUse)
             {
-                if(sender.equals("CONSOLE"))
-                {
-                    Bukkit.getConsoleSender().sendMessage(Prefixes.FAILURE + Prefixes.input(warper) +
-                        " is no longer online.");
-                }
-                else
-                {
-                    Player senderPlayer = Bukkit.getPlayer(sender);
-
-                    if(senderPlayer != null)
-                    {
-                        senderPlayer.sendMessage(Prefixes.FAILURE + Prefixes.input(warper) +
-                            " is no longer online.");
-                    }
-                }
+                sendMessage(Prefixes.FAILURE + Prefixes.input(warper) + " is no longer online.");
             }
+            return;
+        }
+
+        String currentServerName = deltaRedisApi.getServerName();
+        boolean isOwner = player.getName().equalsIgnoreCase(warpOwner);
+        boolean canUseOthers = player.hasPermission("DeltaWarps.Staff.Use") ||
+            player.hasPermission("DeltaWarps.Use.Special." + warp.getName().toLowerCase());
+        boolean canUseNormal = player.hasPermission("DeltaWarps.Use.Normal") || canUseOthers || isForceWarpUse;
+        boolean canUseFaction = player.hasPermission("DeltaWarps.Use.Faction") || canUseOthers || isForceWarpUse;
+
+        if(warp.getServer().equals(currentServerName))
+        {
+            onSameServerWarp(player, isOwner, canUseNormal, canUseFaction, canUseOthers);
+        }
+        else
+        {
+            onDifferentServerWarp(player, isOwner, canUseNormal, canUseOthers);
         }
     }
 
@@ -112,77 +105,68 @@ public class UseWarpRunnable implements Runnable
 
         if(warp.getType() == WarpType.PUBLIC)
         {
-            if(canUseNormal)
-            {
-                warpPlayerWithEvent(player, warpLocation);
-            }
-            else
+            if(!canUseNormal)
             {
                 player.sendMessage(Prefixes.FAILURE + "You do not have permission to use public warps.");
+                return;
             }
-        }
-        else if(warp.getType() == WarpType.FACTION)
-        {
-            if(canUseFaction)
-            {
-                Faction faction = MPlayer.get(player).getFaction();
-                PS locationPS = PS.valueOf(warpLocation);
-                Faction factionAtPos = BoardColl.get().getFactionAt(locationPS);
 
-                if(!factionAtPos.getId().equals(warp.getFaction()))
-                {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "warp remove " + warp.getName());
-                    player.sendMessage(Prefixes.FAILURE + "Whoops! That faction warp shouldn't exist!");
-                    return;
-                }
-
-                if(!faction.isNone())
-                {
-                    if(canUseOthers || faction.getId().equals(warp.getFaction()))
-                    {
-                        warpPlayerWithEvent(player, warpLocation);
-                        player.sendMessage(Prefixes.SUCCESS + "Warping to " +
-                            Prefixes.input(warp.getName()) + " ...");
-                    }
-                    else
-                    {
-                        player.sendMessage(Prefixes.FAILURE + "You are not in the same faction as the warp.");
-                    }
-                }
-                else if(canUseOthers)
-                {
-                    warpPlayerWithEvent(player, warpLocation);
-                    player.sendMessage(Prefixes.SUCCESS + "Warping to " +
-                        Prefixes.input(warp.getName()) + " ...");
-                }
-                else
-                {
-                    player.sendMessage(Prefixes.FAILURE + "Faction warps cannot be used without a faction.");
-                }
-            }
-            else
-            {
-                player.sendMessage(Prefixes.FAILURE + "You do not have permission to use faction warps.");
-            }
+            warpPlayerWithEvent(player, warpLocation);
         }
         else if(warp.getType() == WarpType.PRIVATE)
         {
-            if(canUseNormal)
+            if(!canUseNormal)
             {
-                if(isOwner || canUseOthers)
-                {
-                    warpPlayerWithEvent(player, warpLocation);
-                    player.sendMessage(Prefixes.SUCCESS + "Warping to " +
-                        Prefixes.input(warp.getName()) + " ...");
-                }
-                else
-                {
-                    player.sendMessage(Prefixes.FAILURE + "You do not have access to that private warp.");
-                }
+                player.sendMessage(Prefixes.FAILURE + "You do not have permission to use private warps.");
+                return;
+            }
+
+            if(!isOwner && !canUseOthers)
+            {
+                player.sendMessage(Prefixes.FAILURE + "You do not have access to that private warp.");
+                return;
+            }
+
+            warpPlayerWithEvent(player, warpLocation);
+
+            player.sendMessage(Prefixes.SUCCESS + "Warping to " +
+                Prefixes.input(warp.getName()) + " ...");
+        }
+        else if(warp.getType() == WarpType.FACTION)
+        {
+            if(!Settings.isFactionsEnabled())
+            {
+                player.sendMessage(Prefixes.FAILURE + "Factions is not enabled on this server.");
+                return;
+            }
+
+            if(!canUseFaction)
+            {
+                player.sendMessage(Prefixes.FAILURE + "You do not have permission to use faction warps.");
+                return;
+            }
+
+            Faction faction = MPlayer.get(player).getFaction();
+            PS locationPS = PS.valueOf(warpLocation);
+            Faction factionAtPos = BoardColl.get().getFactionAt(locationPS);
+
+            if(!factionAtPos.getId().equals(warp.getFaction()))
+            {
+                player.sendMessage(Prefixes.FAILURE + "Whoops! That faction warp shouldn't exist! Deleting ...");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "warp remove " + warp.getName());
+                return;
+            }
+
+            if(canUseOthers || (!faction.isNone() && faction.getId().equals(warp.getFaction())))
+            {
+                warpPlayerWithEvent(player, warpLocation);
+
+                player.sendMessage(Prefixes.SUCCESS + "Warping to " +
+                    Prefixes.input(warp.getName()) + " ...");
             }
             else
             {
-                player.sendMessage(Prefixes.FAILURE + "You do not have permission to use private warps.");
+                player.sendMessage(Prefixes.FAILURE + "You are not in the same faction as the warp.");
             }
         }
     }
@@ -205,38 +189,37 @@ public class UseWarpRunnable implements Runnable
 
         if(warp.getType() == WarpType.PUBLIC)
         {
-            if(canUseNormal)
-            {
-                deltaRedisApi.publish(warp.getServer(), WARP_CHANNEL,
-                    player.getName() + "/\\" + warp);
-                deltaEssentialsPlugin.sendToServer(player, warp.getServer());
-                player.sendMessage(Prefixes.SUCCESS + "Warping to " +
-                    Prefixes.input(warp.getName()) + " ...");
-            }
-            else
+            if(!canUseNormal)
             {
                 player.sendMessage(Prefixes.FAILURE + "You do not have permission to use public warps.");
+                return;
             }
+
+            deltaRedisApi.publish(warp.getServer(), WARP_CHANNEL, player.getName(), warp.toString());
+            deltaEssentialsPlugin.sendToServer(player, warp.getServer());
+
+            player.sendMessage(Prefixes.SUCCESS + "Warping to " +
+                Prefixes.input(warp.getName()) + " ...");
         }
         else if(warp.getType() == WarpType.PRIVATE)
         {
-            if(canUseNormal)
-            {
-                if(isOwner || canUseOthers)
-                {
-                    deltaRedisApi.publish(warp.getServer(), WARP_CHANNEL, player.getName(), warp.toString());
-                    deltaEssentialsPlugin.sendToServer(player, warp.getServer());
-                    player.sendMessage(Prefixes.SUCCESS + "Warping ...");
-                }
-                else
-                {
-                    player.sendMessage(Prefixes.FAILURE + "You do not have access to that private warp.");
-                }
-            }
-            else
+            if(!canUseNormal)
             {
                 player.sendMessage(Prefixes.FAILURE + "You do not have permission to use private warps.");
+                return;
             }
+
+            if(!isOwner && !canUseOthers)
+            {
+                player.sendMessage(Prefixes.FAILURE + "You do not have access to that private warp.");
+                return;
+            }
+
+            deltaRedisApi.publish(warp.getServer(), WARP_CHANNEL, player.getName(), warp.toString());
+            deltaEssentialsPlugin.sendToServer(player, warp.getServer());
+
+            player.sendMessage(Prefixes.SUCCESS + "Warping to " +
+                Prefixes.input(warp.getName()) + " ...");
         }
     }
 
@@ -257,6 +240,22 @@ public class UseWarpRunnable implements Runnable
         if(!event.isCancelled())
         {
             player.teleport(location);
+        }
+    }
+
+    private void sendMessage(String message)
+    {
+        if(sender.equals("CONSOLE"))
+        {
+            Bukkit.getConsoleSender().sendMessage(message);
+        }
+        else
+        {
+            Player senderPlayer = Bukkit.getPlayer(sender);
+            if(senderPlayer != null)
+            {
+                senderPlayer.sendMessage(message);
+            }
         }
     }
 }
