@@ -43,7 +43,7 @@ public class GetPlayerWarpsRunnable implements Runnable
         " FROM deltawarps_player" +
         " WHERE name = ?;";
     private static final String SELECT_PLAYER_WARPS =
-        " SELECT name, server, type" +
+        " SELECT deltawarps_warp.name, server, type" +
         " FROM deltawarps_warp" +
         " INNER JOIN deltawarps_player" +
         " ON deltawarps_player.id = deltawarps_warp.ownerId" +
@@ -114,7 +114,7 @@ public class GetPlayerWarpsRunnable implements Runnable
                 {
                     while(resultSet.next())
                     {
-                        String name = resultSet.getString("name");
+                        String name = resultSet.getString("deltawarps_warp.name");
                         String server = resultSet.getString("server");
                         WarpType type = WarpType.fromString(resultSet.getString("type"));
 

@@ -2,7 +2,8 @@ name: DeltaWarps
 main: com.gmail.tracebachi.DeltaWarps.DeltaWarps
 version: 1.6
 author: Trace Bachi (tracebachi@gmail.com, BigBossZee)
-depend: [DeltaRedis, DeltaEssentials, DbShare, Factions]
+depend: [DeltaRedis, DeltaEssentials, DbShare]
+soft-depend: [Factions]
 commands:
   warp:
     description: Use a warp.

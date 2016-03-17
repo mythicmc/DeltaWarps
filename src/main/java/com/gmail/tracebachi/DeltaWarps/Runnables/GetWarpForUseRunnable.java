@@ -54,7 +54,7 @@ public class GetWarpForUseRunnable implements Runnable
         Preconditions.checkNotNull(warpName, "Warp name cannot be null.");
         Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
 
-        this.sender = sender.toLowerCase();
+        this.sender = sender;
         this.warper = warper;
         this.warpName = warpName.toLowerCase();
         this.plugin = plugin;

@@ -36,7 +36,7 @@ import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
 public class GetWarpInfoRunnable implements Runnable
 {
     private static final String SELECT_WARP =
-        " SELECT x, y, z, type, server, deltawarps_player.name" +
+        " SELECT x, y, z, world, type, server, deltawarps_player.name" +
         " FROM deltawarps_warp" +
         " INNER JOIN deltawarps_player" +
         " ON deltawarps_warp.ownerId = deltawarps_player.id" +
@@ -75,6 +75,7 @@ public class GetWarpInfoRunnable implements Runnable
                         int x = resultSet.getInt("x");
                         int y = resultSet.getShort("y");
                         int z = resultSet.getShort("z");
+                        String world = resultSet.getString("world");
                         String type = resultSet.getString("type");
                         String server = resultSet.getString("server");
                         String owner = resultSet.getString("deltawarps_player.name");
@@ -86,6 +87,7 @@ public class GetWarpInfoRunnable implements Runnable
                                 Prefixes.INFO + "X: " + Prefixes.input(x),
                                 Prefixes.INFO + "Y: " + Prefixes.input(y),
                                 Prefixes.INFO + "Z: " + Prefixes.input(z),
+                                Prefixes.INFO + "World: " + Prefixes.input(world),
                                 Prefixes.INFO + "Type: " + Prefixes.input(type),
                                 Prefixes.INFO + "Owner: " + Prefixes.input(owner),
                                 Prefixes.INFO + "Server: " + Prefixes.input(server)
@@ -95,6 +97,7 @@ public class GetWarpInfoRunnable implements Runnable
                         {
                             sendMessages(plugin, sender, Arrays.asList(
                                 Prefixes.INFO + "Warp information for " + Prefixes.input(warpName),
+                                Prefixes.INFO + "World: " + Prefixes.input(world),
                                 Prefixes.INFO + "Type: " + Prefixes.input(type),
                                 Prefixes.INFO + "Owner: " + Prefixes.input(owner),
                                 Prefixes.INFO + "Server: " + Prefixes.input(server)

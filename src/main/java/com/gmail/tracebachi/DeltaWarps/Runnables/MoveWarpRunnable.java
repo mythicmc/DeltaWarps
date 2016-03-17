@@ -36,7 +36,7 @@ import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 public class MoveWarpRunnable implements Runnable
 {
     private static final String SELECT_WARP =
-        " SELECT type, faction, deltawarps_player.name" +
+        " SELECT type, deltawarps_warp.faction, deltawarps_player.name" +
         " FROM deltawarps_warp" +
         " INNER JOIN deltawarps_player" +
         " ON deltawarps_warp.ownerId = deltawarps_player.id" +
@@ -97,7 +97,7 @@ public class MoveWarpRunnable implements Runnable
     private void onWarpFound(ResultSet resultSet, Connection connection) throws SQLException
     {
         WarpType originalType = WarpType.fromString(resultSet.getString("type"));
-        String originalFaction = resultSet.getString("faction");
+        String originalFaction = resultSet.getString("deltawarps_warp.faction");
         String owner = resultSet.getString("deltawarps_player.name");
 
         if(!ignoreOwner && !owner.equals(sender))

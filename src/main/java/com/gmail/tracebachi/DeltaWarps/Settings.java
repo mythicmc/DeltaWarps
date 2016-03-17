@@ -29,7 +29,7 @@ public class Settings
 
         debugEnabled = config.getBoolean("Debug");
         warpEditingEnabled = config.getBoolean("WarpEditing");
-        factionsEnabled = Bukkit.getPluginManager().isPluginEnabled("Factions");
+        factionsEnabled = Bukkit.getPluginManager().getPlugin("Factions") != null;
         databaseName = config.getString("Database");
 
         section = config.getConfigurationSection("GroupLimits");
