@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.MoveWarpRunnable;
@@ -105,6 +106,6 @@ public class MoveCommand implements IWarpCommand
                 sender.hasPermission("DeltaWarps.Staff.Move"), plugin);
         }
 
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        DeltaExecutor.instance().execute(runnable);
     }
 }

@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetWarpForUseRunnable;
@@ -72,7 +73,7 @@ public class UseCommand implements IWarpCommand
 
             GetWarpForUseRunnable runnable = new GetWarpForUseRunnable(
                 player.getName(), player.getName(), args[0], plugin);
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+            DeltaExecutor.instance().execute(runnable);
         }
         else
         {
@@ -98,7 +99,7 @@ public class UseCommand implements IWarpCommand
 
             GetWarpForUseRunnable runnable = new GetWarpForUseRunnable(
                 sender.getName(), warper.getName(), args[0], plugin);
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+            DeltaExecutor.instance().execute(runnable);
         }
     }
 }

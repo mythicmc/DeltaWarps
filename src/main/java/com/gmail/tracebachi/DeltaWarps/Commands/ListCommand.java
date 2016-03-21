@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.ListWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Settings;
@@ -56,7 +57,7 @@ public class ListCommand implements IWarpCommand
         }
 
         ListWarpsRunnable runnable = new ListWarpsRunnable(sender.getName(), page, plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        DeltaExecutor.instance().execute(runnable);
     }
 
     private int parseInt(String source, int def)

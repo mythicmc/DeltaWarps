@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteWarpRunnable;
@@ -71,6 +72,6 @@ public class RemoveCommand implements IWarpCommand
 
         DeleteWarpRunnable runnable = new DeleteWarpRunnable(sender.getName(), warpName,
             sender.hasPermission("DeltaWarps.Staff.Remove"), plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        DeltaExecutor.instance().execute(runnable);
     }
 }

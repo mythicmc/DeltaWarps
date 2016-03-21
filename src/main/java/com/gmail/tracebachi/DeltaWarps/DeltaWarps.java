@@ -17,6 +17,7 @@
 package com.gmail.tracebachi.DeltaWarps;
 
 import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedis;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaWarps.Commands.SWarpCommand;
@@ -104,6 +105,8 @@ public class DeltaWarps extends JavaPlugin
     @Override
     public void onDisable()
     {
+        DeltaExecutor.instance().shutdown();
+
         warpsListener.shutdown();
         warpsListener = null;
 

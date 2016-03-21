@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps;
 
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
 import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent;
@@ -136,7 +137,7 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
 
             DeleteFactionWarpsOnLeaveRunnable runnable = new DeleteFactionWarpsOnLeaveRunnable(
                 mPlayer.getName(), serverName, plugin);
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+            DeltaExecutor.instance().execute(runnable);
         }
     }
 

@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetFactionWarpsRunnable;
@@ -141,7 +142,7 @@ public class InfoCommand implements IWarpCommand
     {
         GetWarpInfoRunnable runnable = new GetWarpInfoRunnable(sender.getName(), warpName,
             sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        DeltaExecutor.instance().execute(runnable);
     }
 
     private void getPlayerWarps(CommandSender sender, String playerName)
@@ -155,7 +156,7 @@ public class InfoCommand implements IWarpCommand
 
         GetPlayerWarpsRunnable runnable = new GetPlayerWarpsRunnable(sender.getName(), playerName,
             groupLimits, sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        DeltaExecutor.instance().execute(runnable);
     }
 
     private void getFactionWarps(CommandSender sender, Faction faction)
@@ -164,6 +165,6 @@ public class InfoCommand implements IWarpCommand
 
         GetFactionWarpsRunnable runnable = new GetFactionWarpsRunnable(
             sender.getName(), faction.getName(), faction.getId(), serverName, plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        DeltaExecutor.instance().execute(runnable);
     }
 }

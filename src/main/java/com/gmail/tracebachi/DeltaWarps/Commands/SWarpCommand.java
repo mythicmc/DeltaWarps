@@ -16,6 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
+import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
 import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
@@ -100,7 +101,7 @@ public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
 
         Warp warp = new Warp(warpName, player.getLocation(), WarpType.PUBLIC, null, serverName);
         AddServerWarpRunnable runnable = new AddServerWarpRunnable(sender.getName(), warp, plugin);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        DeltaExecutor.instance().execute(runnable);
         return true;
     }
 }
