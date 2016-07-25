@@ -89,7 +89,7 @@ public class UseCommand implements IWarpCommand
                 return;
             }
 
-            Player warper = Bukkit.getPlayer(args[1]);
+            Player warper = Bukkit.getPlayerExact(args[1]);
 
             if(warper == null)
             {

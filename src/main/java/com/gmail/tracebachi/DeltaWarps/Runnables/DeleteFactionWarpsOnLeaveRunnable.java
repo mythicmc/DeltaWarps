@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.google.common.base.Preconditions;
@@ -26,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
@@ -47,9 +47,9 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
 
     public DeleteFactionWarpsOnLeaveRunnable(String playerName, String serverName, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(playerName, "Player name cannot be null.");
-        Preconditions.checkNotNull(serverName, "Server name cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(playerName, "Player name was null.");
+        Preconditions.checkNotNull(serverName, "Server name was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.playerName = playerName.toLowerCase();
         this.serverName = serverName;
@@ -67,15 +67,21 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
             {
                 int warpsChanged = updateWarps(playerId, connection);
 
-                sendMessage(plugin, playerName, Prefixes.INFO + "Deleted " +
-                    Prefixes.input(warpsChanged) +
-                    " warps due to you leaving your faction.");
+                sendMessage(
+                    plugin,
+                    playerName,
+                    INFO + "Deleted " + input(warpsChanged) +
+                        " warps due to you leaving your faction.");
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, playerName, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                playerName,
+                FAILURE + "Something went wrong. Please inform the developer.");
         }
     }
 

@@ -17,9 +17,9 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
 import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
+import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddServerWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Settings;
@@ -30,17 +30,17 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
+
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
 public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
 {
-    private final String serverName;
     private DeltaWarps plugin;
 
-    public SWarpCommand(String serverName, DeltaWarps plugin)
+    public SWarpCommand(DeltaWarps plugin)
     {
-        this.serverName = serverName;
         this.plugin = plugin;
     }
 
@@ -67,7 +67,7 @@ public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
     {
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(Prefixes.FAILURE + "Only players can add warps.");
+            sender.sendMessage(FAILURE + "Only players can add warps.");
             return true;
         }
 
@@ -81,7 +81,7 @@ public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
 
         if(args.length == 0)
         {
-            player.sendMessage(Prefixes.INFO + "/swarp <warp name>");
+            player.sendMessage(INFO + "/swarp <warp name>");
             return true;
         }
 
@@ -89,18 +89,27 @@ public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
 
         if(IWarpCommand.reserved.contains(warpName))
         {
-            sender.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            sender.sendMessage(FAILURE + input(warpName) + " is a reserved name.");
             return true;
         }
 
         if(warpName.length() > 31)
         {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
+            player.sendMessage(FAILURE + "Warp name size is restricted to 32 or less characters.");
             return true;
         }
 
-        Warp warp = new Warp(warpName, player.getLocation(), WarpType.PUBLIC, null, serverName);
-        AddServerWarpRunnable runnable = new AddServerWarpRunnable(sender.getName(), warp, plugin);
+        Warp warp = new Warp(
+            warpName,
+            player.getLocation(),
+            WarpType.PUBLIC,
+            null,
+            DeltaRedisApi.instance().getServerName());
+        AddServerWarpRunnable runnable = new AddServerWarpRunnable(
+            sender.getName(),
+            warp,
+            plugin);
+
         DeltaExecutor.instance().execute(runnable);
         return true;
     }

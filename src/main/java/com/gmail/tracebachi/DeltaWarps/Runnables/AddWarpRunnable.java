@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
@@ -26,6 +25,7 @@ import com.google.common.base.Preconditions;
 
 import java.sql.*;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
@@ -65,10 +65,10 @@ public class AddWarpRunnable implements Runnable
 
     public AddWarpRunnable(String sender, Warp warp, GroupLimits groupLimits, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(warp, "Warp cannot be null.");
-        Preconditions.checkNotNull(groupLimits, "Group limits cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(warp, "Warp was null.");
+        Preconditions.checkNotNull(groupLimits, "Group limits was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.warp = warp;
@@ -100,29 +100,39 @@ public class AddWarpRunnable implements Runnable
                     if(warp.getType() == WarpType.FACTION &&
                         factionCount >= (groupLimits.getFaction() + extraFaction))
                     {
-                        sendMessage(plugin, sender, Prefixes.FAILURE +
-                            "You do not have enough free warps to make a faction warp.");
+                        sendMessage(
+                            plugin,
+                            sender,
+                            FAILURE + "You do not have enough free warps to make a faction warp.");
                     }
                     else if(warp.getType() != WarpType.FACTION &&
                         normalCount >= (groupLimits.getNormal() + extraNormal))
                     {
-                        sendMessage(plugin, sender, Prefixes.FAILURE +
-                            "You do not have enough free warps to make a normal warp.");
+                        sendMessage(
+                            plugin,
+                            sender,
+                            FAILURE + "You do not have enough free warps to make a normal warp.");
                     }
                     else
                     {
                         insertWarp(connection);
-                        sendMessage(plugin, sender, Prefixes.SUCCESS + "Created a new " +
-                            Prefixes.input(warp.getType()) + " warp named " +
-                            Prefixes.input(warp.getName()));
+
+                        sendMessage(
+                            plugin,
+                            sender,
+                            SUCCESS + "Created a new " +
+                                input(warp.getType()) + " warp named " +
+                                input(warp.getName()));
                     }
                 }
                 catch(SQLException ex)
                 {
                     if(ex.getErrorCode() == WARP_NAME_EXISTS)
                     {
-                        sendMessage(plugin, sender, Prefixes.FAILURE +
-                            "Failed to create warp. Name is already in use.");
+                        sendMessage(
+                            plugin,
+                            sender,
+                            FAILURE + "Failed to create warp. Name is already in use.");
                     }
                     else
                     {
@@ -132,15 +142,21 @@ public class AddWarpRunnable implements Runnable
             }
             else
             {
-                sendMessage(plugin, sender, Prefixes.FAILURE + "Failed to find or insert player. " +
-                    "Please report this to the developer.");
+                sendMessage(
+                    plugin,
+                    sender,
+                    FAILURE + "Failed to find or insert player. " +
+                        "Please report this to the developer.");
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. " +
-                "Please report this to the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. Please report this to the developer.");
         }
     }
 
@@ -185,6 +201,7 @@ public class AddWarpRunnable implements Runnable
         }
     }
 
+    // TODO Maybe replace with SQL Count?
     private void selectPlayerWarps(Connection connection) throws SQLException
     {
         try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER_WARPS))

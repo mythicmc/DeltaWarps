@@ -18,8 +18,6 @@ package com.gmail.tracebachi.DeltaWarps;
 
 import com.gmail.tracebachi.DeltaEssentials.DeltaEssentials;
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedis;
-import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaWarps.Commands.SWarpCommand;
 import com.gmail.tracebachi.DeltaWarps.Commands.WarpCommand;
 import com.gmail.tracebachi.DeltaWarps.Runnables.UseWarpRunnable;
@@ -44,7 +42,7 @@ public class DeltaWarps extends JavaPlugin
     private static final String CREATE_WARP_TABLE =
         " CREATE TABLE IF NOT EXISTS deltawarps_warp (" +
         " `name`      VARCHAR(32) NOT NULL PRIMARY KEY," +
-        " `ownerId`  INT UNSIGNED NOT NULL," +
+        " `ownerId`   INT UNSIGNED NOT NULL," +
         " `x`         INT SIGNED NOT NULL," +
         " `y`         INT SIGNED NOT NULL," +
         " `z`         INT SIGNED NOT NULL," +
@@ -65,7 +63,6 @@ public class DeltaWarps extends JavaPlugin
         " VALUES(1, '!DeltaWarps!', 65535, 65535);";
 
     private DeltaWarpsListener warpsListener;
-    private DeltaRedisApi deltaRedisApi;
     private DeltaEssentials deltaEssentialsPlugin;
     private WarpCommand warpCommand;
     private SWarpCommand sWarpCommand;
@@ -82,9 +79,7 @@ public class DeltaWarps extends JavaPlugin
         reloadConfig();
         Settings.read(getConfig());
 
-        DeltaRedis deltaRedis = (DeltaRedis) getServer().getPluginManager().getPlugin("DeltaRedis");
         deltaEssentialsPlugin = (DeltaEssentials) getServer().getPluginManager().getPlugin("DeltaEssentials");
-        deltaRedisApi = deltaRedis.getDeltaRedisApi();
 
         if(!createTables())
         {
@@ -92,13 +87,13 @@ public class DeltaWarps extends JavaPlugin
             return;
         }
 
-        warpCommand = new WarpCommand(deltaRedisApi.getServerName(), this);
+        warpCommand = new WarpCommand(this);
         warpCommand.register();
 
-        sWarpCommand = new SWarpCommand(deltaRedisApi.getServerName(), this);
+        sWarpCommand = new SWarpCommand(this);
         sWarpCommand.register();
 
-        warpsListener = new DeltaWarpsListener(deltaRedisApi.getServerName(), this);
+        warpsListener = new DeltaWarpsListener(this);
         warpsListener.register();
     }
 
@@ -137,8 +132,14 @@ public class DeltaWarps extends JavaPlugin
 
     public void useWarpSync(String sender, String warper, String warpOwner, Warp warp)
     {
-        Bukkit.getScheduler().runTask(this, new UseWarpRunnable(
-            deltaRedisApi, deltaEssentialsPlugin, sender, warper, warpOwner, warp));
+        Bukkit.getScheduler().runTask(
+            this,
+            new UseWarpRunnable(
+                deltaEssentialsPlugin,
+                sender,
+                warper,
+                warpOwner,
+                warp));
     }
 
     private boolean createTables()

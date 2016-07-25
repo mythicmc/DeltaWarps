@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
@@ -28,6 +27,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
@@ -49,10 +50,10 @@ public class GetWarpForUseRunnable implements Runnable
 
     public GetWarpForUseRunnable(String sender, String warper, String warpName, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(warper, "Warper cannot be null.");
-        Preconditions.checkNotNull(warpName, "Warp name cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(warper, "Warper was null.");
+        Preconditions.checkNotNull(warpName, "Warp name was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender;
         this.warper = warper;
@@ -80,16 +81,22 @@ public class GetWarpForUseRunnable implements Runnable
                     }
                     else
                     {
-                        sendMessage(plugin, sender, Prefixes.FAILURE + "There is no warp named " +
-                            Prefixes.input(warpName));
+                        sendMessage(
+                            plugin,
+                            sender,
+                            FAILURE + "There is no warp named " + input(warpName));
                     }
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. Please inform the developer.");
         }
     }
 

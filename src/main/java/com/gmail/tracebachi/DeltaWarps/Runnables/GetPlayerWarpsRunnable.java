@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
@@ -30,6 +29,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
 
@@ -58,9 +58,9 @@ public class GetPlayerWarpsRunnable implements Runnable
     public GetPlayerWarpsRunnable(String sender, String player, GroupLimits groupLimits,
         boolean canSeePrivateWarps, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(player, "Player cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(player, "Player was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.player = player.toLowerCase();
@@ -77,7 +77,7 @@ public class GetPlayerWarpsRunnable implements Runnable
             Integer counter = 0;
             List<String> messages = new ArrayList<>(4);
 
-            messages.add(Prefixes.INFO + "Player warp information for " + Prefixes.input(player));
+            messages.add(INFO + "Player warp information for " + input(player));
 
             try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER))
             {
@@ -96,13 +96,11 @@ public class GetPlayerWarpsRunnable implements Runnable
                         factionExtra = String.valueOf(resultSet.getShort("faction"));
                     }
 
-                    messages.add(Prefixes.INFO + "Available Warps:");
-                    messages.add(Prefixes.INFO +
-                        "Normal: " +
-                        Prefixes.input(normalLimit + " + " + normalExtra) +
-                        ", Faction: " +
-                        Prefixes.input(factionLimit + " + " + factionExtra));
-                    messages.add(Prefixes.INFO + "Owned Warps:");
+                    messages.add(INFO + "Available Warps:");
+                    messages.add(INFO +
+                        "Normal: " + input(normalLimit + " + " + normalExtra) + ", " +
+                        "Faction: " + input(factionLimit + " + " + factionExtra));
+                    messages.add(INFO + "Owned Warps:");
                 }
             }
 
@@ -122,19 +120,19 @@ public class GetPlayerWarpsRunnable implements Runnable
 
                         if(type == WarpType.PRIVATE && canSeePrivateWarps)
                         {
-                            messages.add(Prefixes.INFO +
-                                Prefixes.input(counter) + ". " +
-                                Prefixes.input(name) + " on " +
-                                Prefixes.input(server) + ", " +
-                                Prefixes.input(type.name().toLowerCase()));
+                            messages.add(INFO +
+                                input(counter) + ". " +
+                                input(name) + " on " +
+                                input(server) + ", " +
+                                input(type.name().toLowerCase()));
                         }
                         else
                         {
-                            messages.add(Prefixes.INFO +
-                                Prefixes.input(counter) + ". " +
-                                Prefixes.input(name) + " on " +
-                                Prefixes.input(server) + ", " +
-                                Prefixes.input(type.name().toLowerCase()));
+                            messages.add(INFO +
+                                input(counter) + ". " +
+                                input(name) + " on " +
+                                input(server) + ", " +
+                                input(type.name().toLowerCase()));
                         }
                     }
 
@@ -144,8 +142,12 @@ public class GetPlayerWarpsRunnable implements Runnable
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. Please inform the developer.");
         }
     }
 }

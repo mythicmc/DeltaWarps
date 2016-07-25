@@ -16,9 +16,12 @@
  */
 package com.gmail.tracebachi.DeltaWarps;
 
+import com.gmail.tracebachi.DeltaEssentials.Events.PlayerPostLoadEvent;
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
 import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
 import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
+import com.gmail.tracebachi.DeltaRedis.Shared.SplitPatterns;
+import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent;
 import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteFactionWarpsOnLeaveRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
@@ -32,14 +35,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent.DELTA_PATTERN;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.SUCCESS;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
+import static com.massivecraft.factions.event.EventFactionsMembershipChange.MembershipChangeReason.DISBAND;
+import static com.massivecraft.factions.event.EventFactionsMembershipChange.MembershipChangeReason.KICK;
+import static com.massivecraft.factions.event.EventFactionsMembershipChange.MembershipChangeReason.LEAVE;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
@@ -48,17 +54,18 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
 {
     private static final String WARP_CHANNEL = "DW-Warp";
 
-    private final String serverName;
     private HashMap<String, WarpRequest> warpRequests = new HashMap<>();
     private BukkitTask cleanupTask;
     private DeltaWarps plugin;
 
-    public DeltaWarpsListener(String serverName, DeltaWarps plugin)
+    public DeltaWarpsListener(DeltaWarps plugin)
     {
-        this.serverName = serverName;
         this.plugin = plugin;
-
-        cleanupTask = Bukkit.getScheduler().runTaskTimer(plugin, this::cleanup, 40, 40);
+        this.cleanupTask = Bukkit.getScheduler().runTaskTimer(
+            plugin,
+            this::cleanup,
+            40,
+            40);
     }
 
     @Override
@@ -78,7 +85,6 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
     {
         cleanupTask.cancel();
         cleanupTask = null;
-
         warpRequests.clear();
         warpRequests = null;
         plugin = null;
@@ -89,10 +95,10 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
     {
         if(event.getChannel().equals(WARP_CHANNEL))
         {
-            String[] splitMessage = DELTA_PATTERN.split(event.getMessage(), 2);
+            String[] splitMessage = SplitPatterns.DELTA.split(event.getMessage(), 2);
             String name = splitMessage[0];
             Warp warp = Warp.fromString(splitMessage[1]);
-            Player player = Bukkit.getPlayer(name);
+            Player player = Bukkit.getPlayerExact(name);
 
             if(player == null)
             {
@@ -101,47 +107,58 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
             }
 
             World world = Bukkit.getWorld(warp.getWorld());
-            Location location = new Location(world,
-                warp.getX() + 0.5, warp.getY() + 0.5, warp.getZ() + 0.5,
-                warp.getYaw(), warp.getPitch());
+            Location location = new Location(
+                world,
+                warp.getX() + 0.5,
+                warp.getY() + 0.5,
+                warp.getZ() + 0.5,
+                warp.getYaw(),
+                warp.getPitch());
 
-            warpPlayerWithEvent(player, location);
+            warpPlayerWithEvent(player, location, warp);
         }
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event)
+    public void onPlayerPostLoad(PlayerPostLoadEvent event)
     {
         Player player = event.getPlayer();
         WarpRequest request = warpRequests.remove(event.getPlayer().getName());
 
         if(request != null)
         {
-            World world = Bukkit.getWorld(request.warp.getWorld());
-            Location location = new Location(world,
-                request.warp.getX() + 0.5, request.warp.getY() + 0.5, request.warp.getZ() + 0.5,
-                request.warp.getYaw(), request.warp.getPitch());
+            Warp warp = request.warp;
+            World world = Bukkit.getWorld(warp.getWorld());
+            Location location = new Location(
+                world,
+                warp.getX() + 0.5,
+                warp.getY() + 0.5,
+                warp.getZ() + 0.5,
+                warp.getYaw(),
+                warp.getPitch());
 
-            warpPlayerWithEvent(player, location);
+            warpPlayerWithEvent(player, location, warp);
         }
     }
 
     @EventHandler(priority= EventPriority.NORMAL)
     public void onPlayerLeaveFaction(EventFactionsMembershipChange event)
     {
-        if(event.getReason() == EventFactionsMembershipChange.MembershipChangeReason.DISBAND ||
-            event.getReason() == EventFactionsMembershipChange.MembershipChangeReason.KICK ||
-            event.getReason() == EventFactionsMembershipChange.MembershipChangeReason.LEAVE)
+        if(event.getReason() == DISBAND ||
+            event.getReason() == KICK ||
+            event.getReason() == LEAVE)
         {
             MPlayer mPlayer = event.getMPlayer();
 
             DeleteFactionWarpsOnLeaveRunnable runnable = new DeleteFactionWarpsOnLeaveRunnable(
-                mPlayer.getName(), serverName, plugin);
+                mPlayer.getName(),
+                DeltaRedisApi.instance().getServerName(),
+                plugin);
             DeltaExecutor.instance().execute(runnable);
         }
     }
 
-    public void cleanup()
+    private void cleanup()
     {
         Iterator<Map.Entry<String, WarpRequest>> iterator = warpRequests.entrySet().iterator();
         long oldestTime = System.currentTimeMillis() - 5000;
@@ -155,8 +172,10 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
         }
     }
 
-    private void warpPlayerWithEvent(Player player, Location location)
+    private void warpPlayerWithEvent(Player player, Location location, Warp warp)
     {
+        player.sendMessage(SUCCESS + "Warping to " + input(warp.getName()) + " ...");
+
         PlayerWarpEvent event = new PlayerWarpEvent(player, location);
         Bukkit.getPluginManager().callEvent(event);
 

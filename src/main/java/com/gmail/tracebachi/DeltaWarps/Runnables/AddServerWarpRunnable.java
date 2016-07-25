@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
@@ -26,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
@@ -46,9 +46,9 @@ public class AddServerWarpRunnable implements Runnable
 
     public AddServerWarpRunnable(String sender, Warp warp, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(warp, "Warp cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(warp, "Warp was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.warp = warp;
@@ -72,20 +72,29 @@ public class AddServerWarpRunnable implements Runnable
                 statement.setString(8, warp.getServer());
                 statement.execute();
 
-                sendMessage(plugin, sender, Prefixes.SUCCESS + "Created server warp " +
-                    Prefixes.input(warp.getName()));
+                sendMessage(
+                    plugin,
+                    sender,
+                    SUCCESS + "Created server warp " + input(warp.getName()));
             }
         }
         catch(SQLException ex)
         {
             if(ex.getErrorCode() == WARP_NAME_EXISTS)
             {
-                sendMessage(plugin, sender, Prefixes.FAILURE +
-                    "Failed to create warp. Name is already in use.");
+                sendMessage(
+                    plugin,
+                    sender,
+                    FAILURE + "Failed to create warp. Name is already in use.");
             }
             else
             {
                 ex.printStackTrace();
+
+                sendMessage(
+                    plugin,
+                    sender,
+                    FAILURE + "Something went wrong. Please inform the developer.");
             }
         }
     }

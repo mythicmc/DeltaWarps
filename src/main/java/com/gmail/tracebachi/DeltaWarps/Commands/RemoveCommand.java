@@ -17,11 +17,13 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import org.bukkit.command.CommandSender;
+
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -54,24 +56,27 @@ public class RemoveCommand implements IWarpCommand
 
         if(!Settings.isWarpEditingEnabled() && !sender.hasPermission("DeltaWarps.Staff.Remove"))
         {
-            sender.sendMessage(Prefixes.FAILURE + "Removing warps is not enabled on this server.");
+            sender.sendMessage(FAILURE + "Removing warps is not enabled on this server.");
             return;
         }
 
         if(reserved.contains(warpName))
         {
-            sender.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            sender.sendMessage(FAILURE + input(warpName) + " is a reserved name.");
             return;
         }
 
         if(warpName.length() > 31)
         {
-            sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
+            sender.sendMessage(FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;
         }
 
-        DeleteWarpRunnable runnable = new DeleteWarpRunnable(sender.getName(), warpName,
-            sender.hasPermission("DeltaWarps.Staff.Remove"), plugin);
+        DeleteWarpRunnable runnable = new DeleteWarpRunnable(
+            sender.getName(),
+            warpName,
+            sender.hasPermission("DeltaWarps.Staff.Remove"),
+            plugin);
         DeltaExecutor.instance().execute(runnable);
     }
 }

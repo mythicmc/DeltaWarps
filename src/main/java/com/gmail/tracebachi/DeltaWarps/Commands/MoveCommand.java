@@ -17,7 +17,6 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.MoveWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Settings;
@@ -28,6 +27,9 @@ import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.massivecore.ps.PS;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -56,7 +58,7 @@ public class MoveCommand implements IWarpCommand
 
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(Prefixes.FAILURE + "Only players can move warps.");
+            sender.sendMessage(FAILURE + "Only players can move warps.");
             return;
         }
 
@@ -70,19 +72,19 @@ public class MoveCommand implements IWarpCommand
 
         if(!Settings.isWarpEditingEnabled() && !player.hasPermission("DeltaWarps.Staff.Move"))
         {
-            player.sendMessage(Prefixes.FAILURE + "Moving warps is not enabled on this server.");
+            player.sendMessage(FAILURE + "Moving warps is not enabled on this server.");
             return;
         }
 
         if(reserved.contains(warpName))
         {
-            player.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            player.sendMessage(FAILURE + input(warpName) + " is a reserved name.");
             return;
         }
 
         if(args[0].length() > 31)
         {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
+            player.sendMessage(FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;
         }
 
@@ -95,15 +97,33 @@ public class MoveCommand implements IWarpCommand
             Faction facAtPos = BoardColl.get().getFactionAt(locationPS);
             String factionAtPosId = facAtPos.getId();
 
-            warp = new Warp(warpName, player.getLocation(), WarpType.FACTION, factionAtPosId, serverName);
-            runnable = new MoveWarpRunnable(sender.getName(), warp,
-                sender.hasPermission("DeltaWarps.Staff.Move"), plugin);
+            warp = new Warp(
+                warpName,
+                player.getLocation(),
+                WarpType.FACTION,
+                factionAtPosId,
+                serverName);
+
+            runnable = new MoveWarpRunnable(
+                sender.getName(),
+                warp,
+                sender.hasPermission("DeltaWarps.Staff.Move"),
+                plugin);
         }
         else
         {
-            warp = new Warp(warpName, player.getLocation(), WarpType.PRIVATE, null, serverName);
-            runnable = new MoveWarpRunnable(sender.getName(), warp,
-                sender.hasPermission("DeltaWarps.Staff.Move"), plugin);
+            warp = new Warp(
+                warpName,
+                player.getLocation(),
+                WarpType.PRIVATE,
+                null,
+                serverName);
+
+            runnable = new MoveWarpRunnable(
+                sender.getName(),
+                warp,
+                sender.hasPermission("DeltaWarps.Staff.Move"),
+                plugin);
         }
 
         DeltaExecutor.instance().execute(runnable);

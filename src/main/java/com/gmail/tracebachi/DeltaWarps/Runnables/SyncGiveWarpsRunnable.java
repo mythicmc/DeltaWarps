@@ -52,9 +52,9 @@ public class SyncGiveWarpsRunnable implements Runnable
 
     public SyncGiveWarpsRunnable(CommandSender sender, String receiver, WarpType type, int amount)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(receiver, "Receiver cannot be null.");
-        Preconditions.checkNotNull(type, "Type cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(receiver, "Receiver was null.");
+        Preconditions.checkNotNull(type, "Type was null.");
 
         this.sender = sender;
         this.receiver = receiver.toLowerCase();
@@ -89,6 +89,7 @@ public class SyncGiveWarpsRunnable implements Runnable
                 if(currentFaction + amount < 0)
                 {
                     updatePlayer(connection, currentNormal, (short) 0);
+
                     sender.sendMessage(SUCCESS + "Updated faction warps for " +
                         input(receiver) + " from " +
                         input(currentFaction) + " to " +
@@ -97,6 +98,7 @@ public class SyncGiveWarpsRunnable implements Runnable
                 else
                 {
                     updatePlayer(connection, currentNormal, (short) (currentFaction + amount));
+
                     sender.sendMessage(SUCCESS + "Updated faction warps for " +
                         input(receiver) + " from " +
                         input(currentFaction) + " to " +
@@ -108,6 +110,7 @@ public class SyncGiveWarpsRunnable implements Runnable
                 if(currentNormal + amount < 0)
                 {
                     updatePlayer(connection, (short) 0, currentFaction);
+
                     sender.sendMessage(SUCCESS + "Updated normal warps for " +
                         input(receiver) + " from " +
                         input(currentNormal) + " to " +
@@ -116,6 +119,7 @@ public class SyncGiveWarpsRunnable implements Runnable
                 else
                 {
                     updatePlayer(connection, (short) (currentNormal + amount), currentFaction);
+
                     sender.sendMessage(SUCCESS + "Updated normal warps for " +
                         input(receiver) + " from " +
                         input(currentNormal) + " to " +
@@ -125,8 +129,10 @@ public class SyncGiveWarpsRunnable implements Runnable
         }
         catch(SQLException ex)
         {
-            sender.sendMessage(FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
+
+            sender.sendMessage(FAILURE +
+                "Something went wrong. Please inform the developer.");
         }
     }
 

@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
@@ -28,6 +27,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.SUCCESS;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
@@ -54,9 +55,9 @@ public class MoveWarpRunnable implements Runnable
 
     public MoveWarpRunnable(String sender, Warp warp, boolean ignoreOwner, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(warp, "Warp cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(warp, "Warp was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.warp = warp;
@@ -81,16 +82,22 @@ public class MoveWarpRunnable implements Runnable
                     }
                     else
                     {
-                        sendMessage(plugin, sender, Prefixes.FAILURE + "That warp does not exist.");
+                        sendMessage(
+                            plugin,
+                            sender,
+                            FAILURE + "That warp does not exist.");
                     }
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. " +
-                "Please report this to the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. " + "Please report this to the developer.");
         }
     }
 
@@ -102,7 +109,10 @@ public class MoveWarpRunnable implements Runnable
 
         if(!ignoreOwner && !owner.equals(sender))
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "You do not have access to move that warp.");
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "You do not have access to move that warp.");
             return;
         }
 
@@ -110,30 +120,51 @@ public class MoveWarpRunnable implements Runnable
         {
             if(!Settings.isFactionsEnabled())
             {
-                sendMessage(plugin, sender, Prefixes.FAILURE + "Factions is not enabled on this server.");
+                sendMessage(
+                    plugin,
+                    sender,
+                    FAILURE + "Factions is not enabled on this server.");
                 return;
             }
 
             if(warp.getFaction() != null && warp.getFaction().equals(originalFaction))
             {
                 updateWarp(warp, connection);
-                sendMessage(plugin, sender, Prefixes.SUCCESS + "Moved faction warp to new location.");
+
+                sendMessage(
+                    plugin,
+                    sender,
+                    SUCCESS + "Moved faction warp to new location.");
             }
             else
             {
-                sendMessage(plugin, sender, Prefixes.FAILURE + "You cannot move a faction warp " +
-                    "to land that does not belong to your faction.");
+                sendMessage(
+                    plugin,
+                    sender,
+                    FAILURE + "You cannot move a faction warp " +
+                        "to land that does not belong to your faction.");
             }
         }
         else
         {
-            Warp newWarp = new Warp(warp.getName(),
-                warp.getX(), warp.getY(), warp.getZ(),
-                warp.getYaw(), warp.getPitch(), warp.getWorld(),
-                originalType, null, warp.getServer());
+            Warp newWarp = new Warp(
+                warp.getName(),
+                warp.getX(),
+                warp.getY(),
+                warp.getZ(),
+                warp.getYaw(),
+                warp.getPitch(),
+                warp.getWorld(),
+                originalType,
+                null,
+                warp.getServer());
 
             updateWarp(newWarp, connection);
-            sendMessage(plugin, sender, Prefixes.SUCCESS + "Moved normal warp to new location.");
+
+            sendMessage(
+                plugin,
+                sender,
+                SUCCESS + "Moved normal warp to new location.");
         }
     }
 

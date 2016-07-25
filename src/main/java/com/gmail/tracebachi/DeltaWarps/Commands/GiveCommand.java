@@ -16,30 +16,21 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
-import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.SyncGiveWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.command.CommandSender;
+
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
  */
 public class GiveCommand implements IWarpCommand
 {
-    private DeltaWarps plugin;
-
-    public GiveCommand(DeltaWarps plugin)
-    {
-        this.plugin = plugin;
-    }
-
     @Override
-    public void shutdown()
-    {
-        this.plugin = null;
-    }
+    public void shutdown() {}
 
     @Override
     public void onCommand(CommandSender sender, String[] args)
@@ -58,7 +49,8 @@ public class GiveCommand implements IWarpCommand
 
         if(type == WarpType.UNKNOWN)
         {
-            sender.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + Prefixes.input(warpTypeString));
+            sender.sendMessage(FAILURE + "Unknown warp type: " +
+                input(warpTypeString));
             return;
         }
 
@@ -66,12 +58,18 @@ public class GiveCommand implements IWarpCommand
 
         if(amount == null || amount == 0)
         {
-            sender.sendMessage(Prefixes.FAILURE + "Invalid number: " + Prefixes.input(amountString));
+            sender.sendMessage(FAILURE + "Invalid number: " +
+                input(amountString));
             return;
         }
 
-        SyncGiveWarpsRunnable runnable = new SyncGiveWarpsRunnable(sender, receiver, type, amount);
-        plugin.getServer().getScheduler().runTask(plugin, runnable);
+        SyncGiveWarpsRunnable runnable = new SyncGiveWarpsRunnable(
+            sender,
+            receiver,
+            type,
+            amount);
+
+        runnable.run();
     }
 
     private Integer parseInt(String source)

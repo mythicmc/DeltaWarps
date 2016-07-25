@@ -17,7 +17,6 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddWarpRunnable;
 import com.gmail.tracebachi.DeltaWarps.Settings;
@@ -31,6 +30,9 @@ import com.massivecraft.massivecore.ps.PS;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -60,7 +62,7 @@ public class AddCommand implements IWarpCommand
 
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(Prefixes.FAILURE + "Only players can add warps.");
+            sender.sendMessage(FAILURE + "Only players can add warps.");
             return;
         }
 
@@ -74,19 +76,19 @@ public class AddCommand implements IWarpCommand
 
         if(!Settings.isWarpEditingEnabled() && !player.hasPermission("DeltaWarps.Staff.Add"))
         {
-            player.sendMessage(Prefixes.FAILURE + "Adding warps is not enabled on this server.");
+            player.sendMessage(FAILURE + "Adding warps is not enabled on this server.");
             return;
         }
 
         if(reserved.contains(warpName))
         {
-            player.sendMessage(Prefixes.FAILURE + Prefixes.input(warpName) + " is a reserved name.");
+            player.sendMessage(FAILURE + input(warpName) + " is a reserved name.");
             return;
         }
 
         if(warpName.length() > 31)
         {
-            player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
+            player.sendMessage(FAILURE + "Warp name size is restricted to 32 or less characters.");
             return;
         }
 
@@ -94,7 +96,7 @@ public class AddCommand implements IWarpCommand
 
         if(type == WarpType.UNKNOWN)
         {
-            player.sendMessage(Prefixes.FAILURE + "Unknown warp type: " + Prefixes.input(warpTypeString));
+            player.sendMessage(FAILURE + "Unknown warp type: " + input(warpTypeString));
             return;
         }
 
@@ -105,7 +107,7 @@ public class AddCommand implements IWarpCommand
         {
             if(!Settings.isFactionsEnabled())
             {
-                player.sendMessage(Prefixes.FAILURE + "Factions is not enabled on this server.");
+                player.sendMessage(FAILURE + "Factions is not enabled on this server.");
                 return;
             }
 
@@ -116,26 +118,40 @@ public class AddCommand implements IWarpCommand
 
             if(!mPlayer.hasFaction())
             {
-                player.sendMessage(Prefixes.FAILURE +
+                player.sendMessage(FAILURE +
                     "Faction warps cannot be created without a faction.");
                 return;
             }
 
             if(!mPlayer.getFactionId().equals(facAtPos.getId()))
             {
-                player.sendMessage(Prefixes.FAILURE +
+                player.sendMessage(FAILURE +
                     "Faction warps can only be created on land owned by your faction.");
                 return;
             }
 
-            warp = new Warp(warpName, player.getLocation(), type, facAtPos.getId(), serverName);
+            warp = new Warp(
+                warpName,
+                player.getLocation(),
+                type,
+                facAtPos.getId(),
+                serverName);
         }
         else
         {
-            warp = new Warp(warpName, player.getLocation(), type, null, serverName);
+            warp = new Warp(
+                warpName,
+                player.getLocation(),
+                type,
+                null,
+                serverName);
         }
 
-        AddWarpRunnable runnable = new AddWarpRunnable(sender.getName(), warp, groupLimit, plugin);
+        AddWarpRunnable runnable = new AddWarpRunnable(
+            sender.getName(),
+            warp,
+            groupLimit,
+            plugin);
         DeltaExecutor.instance().execute(runnable);
     }
 }

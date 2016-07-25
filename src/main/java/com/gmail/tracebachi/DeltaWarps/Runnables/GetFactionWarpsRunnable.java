@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.google.common.base.Preconditions;
@@ -28,6 +27,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
 
@@ -52,10 +52,10 @@ public class GetFactionWarpsRunnable implements Runnable
     public GetFactionWarpsRunnable(String sender, String factionName, String factionId,
         String serverName, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(factionName, "Faction name cannot be null.");
-        Preconditions.checkNotNull(factionId, "Faction ID cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(factionName, "Faction name was null.");
+        Preconditions.checkNotNull(factionId, "Faction ID was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.factionName = factionName.toLowerCase();
@@ -77,16 +77,16 @@ public class GetFactionWarpsRunnable implements Runnable
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     List<String> messages = new ArrayList<>(4);
-                    messages.add(Prefixes.INFO + "Faction warp information for " +
-                        Prefixes.input(factionName) + " on " + Prefixes.input(serverName));
+                    messages.add(INFO + "Faction warp information for " +
+                        input(factionName) + " on " + input(serverName));
 
                     while(resultSet.next())
                     {
                         String warpName = resultSet.getString("deltawarps_warp.name");
                         String owner = resultSet.getString("deltawarps_player.name");
 
-                        messages.add(Prefixes.INFO + Prefixes.input(warpName) +
-                            " owned by " + Prefixes.input(owner));
+                        messages.add(INFO + input(warpName) +
+                            " owned by " + input(owner));
                     }
 
                     sendMessages(plugin, sender, messages);
@@ -95,8 +95,12 @@ public class GetFactionWarpsRunnable implements Runnable
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. Please inform the developer.");
         }
     }
 }

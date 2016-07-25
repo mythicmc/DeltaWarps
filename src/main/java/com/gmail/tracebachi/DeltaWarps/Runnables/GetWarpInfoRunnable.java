@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.google.common.base.Preconditions;
@@ -27,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
 
@@ -49,9 +49,9 @@ public class GetWarpInfoRunnable implements Runnable
 
     public GetWarpInfoRunnable(String sender, String warpName, boolean canSeeCoords, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(warpName, "Warp name cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(warpName, "Warp name was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.warpName = warpName.toLowerCase();
@@ -82,39 +82,52 @@ public class GetWarpInfoRunnable implements Runnable
 
                         if(canSeeCoords)
                         {
-                            sendMessages(plugin, sender, Arrays.asList(
-                                Prefixes.INFO + "Warp information for " + Prefixes.input(warpName),
-                                Prefixes.INFO + "X: " + Prefixes.input(x),
-                                Prefixes.INFO + "Y: " + Prefixes.input(y),
-                                Prefixes.INFO + "Z: " + Prefixes.input(z),
-                                Prefixes.INFO + "World: " + Prefixes.input(world),
-                                Prefixes.INFO + "Type: " + Prefixes.input(type),
-                                Prefixes.INFO + "Owner: " + Prefixes.input(owner),
-                                Prefixes.INFO + "Server: " + Prefixes.input(server)
-                            ));
+                            sendMessages(
+                                plugin,
+                                sender,
+                                Arrays.asList(
+                                    INFO + "Warp information for " + input(warpName),
+                                    INFO + "X: " + input(x),
+                                    INFO + "Y: " + input(y),
+                                    INFO + "Z: " + input(z),
+                                    INFO + "World: " + input(world),
+                                    INFO + "Type: " + input(type),
+                                    INFO + "Owner: " + input(owner),
+                                    INFO + "Server: " + input(server)
+                                ));
                         }
                         else
                         {
-                            sendMessages(plugin, sender, Arrays.asList(
-                                Prefixes.INFO + "Warp information for " + Prefixes.input(warpName),
-                                Prefixes.INFO + "World: " + Prefixes.input(world),
-                                Prefixes.INFO + "Type: " + Prefixes.input(type),
-                                Prefixes.INFO + "Owner: " + Prefixes.input(owner),
-                                Prefixes.INFO + "Server: " + Prefixes.input(server)
-                            ));
+                            sendMessages(
+                                plugin,
+                                sender,
+                                Arrays.asList(
+                                    INFO + "Warp information for " + input(warpName),
+                                    INFO + "World: " + input(world),
+                                    INFO + "Type: " + input(type),
+                                    INFO + "Owner: " + input(owner),
+                                    INFO + "Server: " + input(server)
+                                ));
                         }
                     }
                     else
                     {
-                        sendMessage(plugin, sender, Prefixes.FAILURE + Prefixes.input(warpName) + " does not exist.");
+                        sendMessage(
+                            plugin,
+                            sender,
+                            FAILURE + input(warpName) + " does not exist.");
                     }
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. Please inform the developer.");
         }
     }
 }

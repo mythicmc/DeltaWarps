@@ -17,7 +17,6 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetFactionWarpsRunnable;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetPlayerWarpsRunnable;
@@ -30,6 +29,9 @@ import com.massivecraft.factions.entity.FactionColl;
 import com.massivecraft.factions.entity.MPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
@@ -60,7 +62,7 @@ public class InfoCommand implements IWarpCommand
         {
             if(args.length < 3)
             {
-                sender.sendMessage(Prefixes.FAILURE + "Warp name not specified.");
+                sender.sendMessage(FAILURE + "Warp name not specified.");
             }
             else
             {
@@ -82,7 +84,7 @@ public class InfoCommand implements IWarpCommand
         {
             if(!Settings.isFactionsEnabled())
             {
-                sender.sendMessage(Prefixes.FAILURE + "Factions is not enabled on this server.");
+                sender.sendMessage(FAILURE + "Factions is not enabled on this server.");
                 return;
             }
 
@@ -90,7 +92,7 @@ public class InfoCommand implements IWarpCommand
             {
                 if(args.length < 3)
                 {
-                    sender.sendMessage(Prefixes.FAILURE + "No faction specified.");
+                    sender.sendMessage(FAILURE + "No faction specified.");
                 }
                 else
                 {
@@ -99,7 +101,7 @@ public class InfoCommand implements IWarpCommand
 
                     if(faction == null)
                     {
-                        sender.sendMessage(Prefixes.FAILURE + Prefixes.input(factionName) +
+                        sender.sendMessage(FAILURE + input(factionName) +
                             " does not exist on this server.");
                     }
                     else
@@ -117,7 +119,7 @@ public class InfoCommand implements IWarpCommand
 
                     if(faction == null)
                     {
-                        sender.sendMessage(Prefixes.FAILURE + Prefixes.input(factionName) +
+                        sender.sendMessage(FAILURE + input(factionName) +
                             " does not exist on this server.");
                     }
                     else
@@ -134,14 +136,17 @@ public class InfoCommand implements IWarpCommand
         }
         else
         {
-            sender.sendMessage(Prefixes.FAILURE + "Unknown info type. Only W, P, and F are valid.");
+            sender.sendMessage(FAILURE + "Unknown info type. Only W, P, and F are valid.");
         }
     }
 
     private void getWarp(CommandSender sender, String warpName)
     {
-        GetWarpInfoRunnable runnable = new GetWarpInfoRunnable(sender.getName(), warpName,
-            sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
+        GetWarpInfoRunnable runnable = new GetWarpInfoRunnable(
+            sender.getName(),
+            warpName,
+            sender.hasPermission("DeltaWarps.Staff.Info"),
+            plugin);
         DeltaExecutor.instance().execute(runnable);
     }
 
@@ -154,17 +159,25 @@ public class InfoCommand implements IWarpCommand
             groupLimits = Settings.getGroupLimitsForSender((Player) sender);
         }
 
-        GetPlayerWarpsRunnable runnable = new GetPlayerWarpsRunnable(sender.getName(), playerName,
-            groupLimits, sender.hasPermission("DeltaWarps.Staff.Info"), plugin);
+        GetPlayerWarpsRunnable runnable = new GetPlayerWarpsRunnable(
+            sender.getName(),
+            playerName,
+            groupLimits,
+            sender.hasPermission("DeltaWarps.Staff.Info"),
+            plugin);
         DeltaExecutor.instance().execute(runnable);
     }
 
     private void getFactionWarps(CommandSender sender, Faction faction)
     {
-        Preconditions.checkNotNull(faction, "Faction cannot be null.");
+        Preconditions.checkNotNull(faction, "Faction was null.");
 
         GetFactionWarpsRunnable runnable = new GetFactionWarpsRunnable(
-            sender.getName(), faction.getName(), faction.getId(), serverName, plugin);
+            sender.getName(),
+            faction.getName(),
+            faction.getId(),
+            serverName,
+            plugin);
         DeltaExecutor.instance().execute(runnable);
     }
 }

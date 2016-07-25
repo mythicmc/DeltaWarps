@@ -53,18 +53,21 @@ public class ListCommand implements IWarpCommand
 
         if(args.length >= 2)
         {
-            page = parseInt(args[1], 0);
+            page = parsePositiveInt(args[1], 0);
         }
 
-        ListWarpsRunnable runnable = new ListWarpsRunnable(sender.getName(), page, plugin);
+        ListWarpsRunnable runnable = new ListWarpsRunnable(
+            sender.getName(),
+            page,
+            plugin);
         DeltaExecutor.instance().execute(runnable);
     }
 
-    private int parseInt(String source, int def)
+    private int parsePositiveInt(String source, int def)
     {
         try
         {
-            return Integer.parseInt(source);
+            return Math.max(0, Integer.parseInt(source));
         }
         catch(NumberFormatException ex)
         {

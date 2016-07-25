@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.google.common.base.Preconditions;
@@ -26,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 
 /**
@@ -51,9 +51,9 @@ public class DeleteWarpRunnable implements Runnable
 
     public DeleteWarpRunnable(String sender, String warpName, boolean ignoreOwner, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(warpName, "Warp name cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(warpName, "Warp name was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.warpName = warpName.toLowerCase();
@@ -74,24 +74,36 @@ public class DeleteWarpRunnable implements Runnable
                 {
                     deleteWarp(connection);
 
-                    sendMessage(plugin, sender, Prefixes.SUCCESS + "Deleted warp " +
-                        Prefixes.input(warpName));
+                    sendMessage(
+                        plugin,
+                        sender,
+                        SUCCESS + "Deleted warp " + input(warpName));
                 }
                 else
                 {
-                    sendMessage(plugin, sender, Prefixes.FAILURE + "You do not have permission to delete " +
-                        Prefixes.input(warpName));
+                    sendMessage(
+                        plugin,
+                        sender,
+                        FAILURE + "You do not have permission to delete " +
+                            input(warpName));
                 }
             }
             else
             {
-                sendMessage(plugin, sender, Prefixes.FAILURE + Prefixes.input(warpName) + " does not exist.");
+                sendMessage(
+                    plugin,
+                    sender,
+                    FAILURE + input(warpName) + " does not exist.");
             }
         }
         catch(SQLException ex)
         {
-            sendMessage(plugin, sender, Prefixes.FAILURE + "Something went wrong. Please inform the developer.");
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. Please inform the developer.");
         }
     }
 

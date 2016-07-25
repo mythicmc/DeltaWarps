@@ -16,7 +16,6 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Runnables;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.google.common.base.Preconditions;
@@ -27,9 +26,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
+import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
 
 /**
@@ -49,8 +49,8 @@ public class ListWarpsRunnable implements Runnable
 
     public ListWarpsRunnable(String sender, int pageOffset, DeltaWarps plugin)
     {
-        Preconditions.checkNotNull(sender, "Sender cannot be null.");
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null.");
+        Preconditions.checkNotNull(sender, "Sender was null.");
+        Preconditions.checkNotNull(plugin, "Plugin was null.");
 
         this.sender = sender.toLowerCase();
         this.pageOffset = pageOffset;
@@ -64,12 +64,12 @@ public class ListWarpsRunnable implements Runnable
         {
             try(PreparedStatement statement = connection.prepareStatement(SELECT_WARP))
             {
-                statement.setInt(1, pageOffset * 50);
+                statement.setInt(1, pageOffset * 75);
 
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     List<String> messages = new ArrayList<>(75);
-                    String header = Prefixes.INFO + "Warp list (Page " + Prefixes.input(pageOffset) + "): ";
+                    String header = INFO + "Warp list (Page " + input(pageOffset) + "): ";
 
                     while(resultSet.next())
                     {
@@ -77,15 +77,21 @@ public class ListWarpsRunnable implements Runnable
                         messages.add(name);
                     }
 
-                    sendMessages(plugin, sender, Arrays.asList(header, String.join(", ", messages)));
+                    sendMessages(
+                        plugin,
+                        sender,
+                        Arrays.asList(header, String.join(", ", messages)));
                 }
             }
         }
         catch(SQLException ex)
         {
-            sendMessages(plugin, sender, Collections.singletonList(
-                Prefixes.FAILURE + "Something went wrong. Please inform the developer."));
             ex.printStackTrace();
+
+            sendMessage(
+                plugin,
+                sender,
+                FAILURE + "Something went wrong. Please inform the developer.");
         }
     }
 }

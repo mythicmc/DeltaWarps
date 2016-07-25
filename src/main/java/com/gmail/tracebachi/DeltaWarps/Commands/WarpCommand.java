@@ -16,13 +16,15 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
 import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
+import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.INFO;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -38,8 +40,10 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
     private GiveCommand giveCommand;
     private DeltaWarps plugin;
 
-    public WarpCommand(String serverName, DeltaWarps plugin)
+    public WarpCommand(DeltaWarps plugin)
     {
+        String serverName = DeltaRedisApi.instance().getServerName();
+
         this.plugin = plugin;
         this.useCommand = new UseCommand(plugin);
         this.addCommand = new AddCommand(serverName, plugin);
@@ -47,7 +51,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         this.moveCommand = new MoveCommand(serverName, plugin);
         this.infoCommand = new InfoCommand(serverName, plugin);
         this.listCommand = new ListCommand(plugin);
-        this.giveCommand = new GiveCommand(plugin);
+        this.giveCommand = new GiveCommand();
     }
 
     @Override
@@ -88,13 +92,13 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
     {
         if(args.length == 0)
         {
-            sender.sendMessage(Prefixes.INFO + "/warp [add, remove, move, info, list, give]");
+            sender.sendMessage(INFO + "/warp [add, remove, move, info, list, give]");
         }
         else if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("set"))
         {
             if(args.length < 2)
             {
-                sender.sendMessage(Prefixes.INFO + "/warp add <warp name> [public|faction|private]");
+                sender.sendMessage(INFO + "/warp add <warp name> [public|faction|private]");
             }
             else
             {
@@ -105,7 +109,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 2)
             {
-                sender.sendMessage(Prefixes.INFO + "/warp remove <warp name>");
+                sender.sendMessage(INFO + "/warp remove <warp name>");
             }
             else
             {
@@ -116,7 +120,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 2)
             {
-                sender.sendMessage(Prefixes.INFO + "/warp move <warp name>");
+                sender.sendMessage(INFO + "/warp move <warp name>");
             }
             else
             {
@@ -127,9 +131,9 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 2)
             {
-                sender.sendMessage(Prefixes.INFO + "/warp info w <warp name>");
-                sender.sendMessage(Prefixes.INFO + "/warp info p");
-                sender.sendMessage(Prefixes.INFO + "/warp info f");
+                sender.sendMessage(INFO + "/warp info w <warp name>");
+                sender.sendMessage(INFO + "/warp info p");
+                sender.sendMessage(INFO + "/warp info f");
             }
             else
             {
@@ -140,7 +144,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 1)
             {
-                sender.sendMessage(Prefixes.INFO + "/warp list [page]");
+                sender.sendMessage(INFO + "/warp list [page]");
             }
             else
             {
@@ -151,7 +155,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 4)
             {
-                sender.sendMessage(Prefixes.INFO + "/warp give <player> <public|faction|private> <amount>");
+                sender.sendMessage(INFO + "/warp give <player> <public|faction|private> <amount>");
             }
             else
             {
