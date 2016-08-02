@@ -1,6 +1,6 @@
 name: DeltaWarps
 main: com.gmail.tracebachi.DeltaWarps.DeltaWarps
-version: 1.8
+version: ${project.version}
 author: Trace Bachi (tracebachi@gmail.com, BigBossZee)
 depend: [DeltaRedis, DeltaEssentials, DeltaExecutor, DbShare]
 soft-depend: [Factions]

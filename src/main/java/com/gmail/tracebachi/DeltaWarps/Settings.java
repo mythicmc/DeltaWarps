@@ -16,7 +16,7 @@
  */
 package com.gmail.tracebachi.DeltaWarps;
 
-import com.gmail.tracebachi.DbShare.DbShare;
+import com.gmail.tracebachi.DbShare.Spigot.DbShare;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
