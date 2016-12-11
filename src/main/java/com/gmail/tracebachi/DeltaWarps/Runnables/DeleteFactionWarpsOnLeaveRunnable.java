@@ -25,8 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -70,8 +70,8 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
                 sendMessage(
                     plugin,
                     playerName,
-                    INFO + "Deleted " + input(warpsChanged) +
-                        " warps due to you leaving your faction.");
+                    info("Deleted " + input(warpsChanged) +
+                        " warps due to you leaving your faction."));
             }
         }
         catch(SQLException ex)
@@ -81,7 +81,7 @@ public class DeleteFactionWarpsOnLeaveRunnable implements Runnable
             sendMessage(
                 plugin,
                 playerName,
-                FAILURE + "Something went wrong. Please inform the developer.");
+                failure("Something went wrong. Please inform the developer."));
         }
     }
 

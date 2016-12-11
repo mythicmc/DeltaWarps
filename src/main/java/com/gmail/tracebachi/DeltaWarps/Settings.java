@@ -20,6 +20,7 @@ import com.gmail.tracebachi.DbShare.Spigot.DbShare;
 import com.gmail.tracebachi.DeltaWarps.Storage.GroupLimits;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -27,8 +28,7 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
+import static com.gmail.tracebachi.DeltaRedis.Shared.ChatMessageHelper.formatNoPerm;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 3/15/16.
@@ -107,8 +107,45 @@ public class Settings
         return new GroupLimits(normalLimit, factionLimit);
     }
 
+    /** Temporary until plugin can be refactored **/
+    private static final String INFO = ChatColor.translateAlternateColorCodes('&',
+        "&8[&9!&8] &9Info &8[&9!&8]&7 ");
+
+    /** Temporary until plugin can be refactored **/
+    private static final String SUCCESS = ChatColor.translateAlternateColorCodes('&',
+        "&8[&a!&8] &aSuccess &8[&a!&8]&7 ");
+
+    /** Temporary until plugin can be refactored **/
+    private static final String FAILURE = ChatColor.translateAlternateColorCodes('&',
+        "&8[&c!&8] &cFailure &8[&c!&8]&7 ");
+
+    /** Temporary until plugin can be refactored **/
+    public static String info(String message)
+    {
+        return INFO + message;
+    }
+
+    /** Temporary until plugin can be refactored **/
+    public static String success(String message)
+    {
+        return SUCCESS + message;
+    }
+
+    /** Temporary until plugin can be refactored **/
+    public static String failure(String message)
+    {
+        return FAILURE + message;
+    }
+
+    /** Temporary until plugin can be refactored **/
+    public static String input(Object object)
+    {
+        return ChatColor.WHITE + (object != null ? object.toString() : "NULL") + ChatColor.GRAY;
+    }
+
+    /** Temporary until plugin can be refactored **/
     public static String noPermission(String permission)
     {
-        return FAILURE + "You do not have the " + input(permission) + " permission.";
+        return formatNoPerm(permission);
     }
 }

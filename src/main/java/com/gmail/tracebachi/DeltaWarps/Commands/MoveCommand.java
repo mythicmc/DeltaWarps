@@ -28,8 +28,8 @@ import com.massivecraft.massivecore.ps.PS;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
+import static com.gmail.tracebachi.DeltaWarps.Settings.failure;
+import static com.gmail.tracebachi.DeltaWarps.Settings.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -58,7 +58,7 @@ public class MoveCommand implements IWarpCommand
 
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(FAILURE + "Only players can move warps.");
+            sender.sendMessage(failure("Only players can move warps."));
             return;
         }
 
@@ -72,19 +72,19 @@ public class MoveCommand implements IWarpCommand
 
         if(!Settings.isWarpEditingEnabled() && !player.hasPermission("DeltaWarps.Staff.Move"))
         {
-            player.sendMessage(FAILURE + "Moving warps is not enabled on this server.");
+            player.sendMessage(failure("Moving warps is not enabled on this server."));
             return;
         }
 
         if(reserved.contains(warpName))
         {
-            player.sendMessage(FAILURE + input(warpName) + " is a reserved name.");
+            player.sendMessage(failure(input(warpName) + " is a reserved name."));
             return;
         }
 
         if(args[0].length() > 31)
         {
-            player.sendMessage(FAILURE + "Warp name size is restricted to 32 or less characters.");
+            player.sendMessage(failure("Warp name size is restricted to 32 or less characters."));
             return;
         }
 

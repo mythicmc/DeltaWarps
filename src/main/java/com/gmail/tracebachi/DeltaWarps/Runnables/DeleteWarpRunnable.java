@@ -25,8 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -77,15 +77,15 @@ public class DeleteWarpRunnable implements Runnable
                     sendMessage(
                         plugin,
                         sender,
-                        SUCCESS + "Deleted warp " + input(warpName));
+                        success("Deleted warp " + input(warpName)));
                 }
                 else
                 {
                     sendMessage(
                         plugin,
                         sender,
-                        FAILURE + "You do not have permission to delete " +
-                            input(warpName));
+                        failure("You do not have permission to delete " +
+                            input(warpName)));
                 }
             }
             else
@@ -93,7 +93,7 @@ public class DeleteWarpRunnable implements Runnable
                 sendMessage(
                     plugin,
                     sender,
-                    FAILURE + input(warpName) + " does not exist.");
+                    failure(input(warpName) + " does not exist."));
             }
         }
         catch(SQLException ex)
@@ -103,7 +103,7 @@ public class DeleteWarpRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "Something went wrong. Please inform the developer.");
+                failure("Something went wrong. Please inform the developer."));
         }
     }
 

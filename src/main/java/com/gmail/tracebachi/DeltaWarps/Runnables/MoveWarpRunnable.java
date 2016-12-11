@@ -27,9 +27,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.SUCCESS;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
+import static com.gmail.tracebachi.DeltaWarps.Settings.failure;
+import static com.gmail.tracebachi.DeltaWarps.Settings.success;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -85,7 +85,7 @@ public class MoveWarpRunnable implements Runnable
                         sendMessage(
                             plugin,
                             sender,
-                            FAILURE + "That warp does not exist.");
+                            failure("That warp does not exist."));
                     }
                 }
             }
@@ -97,7 +97,7 @@ public class MoveWarpRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "Something went wrong. " + "Please report this to the developer.");
+                failure("Something went wrong. " + "Please report this to the developer."));
         }
     }
 
@@ -112,7 +112,7 @@ public class MoveWarpRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "You do not have access to move that warp.");
+                failure("You do not have access to move that warp."));
             return;
         }
 
@@ -123,7 +123,7 @@ public class MoveWarpRunnable implements Runnable
                 sendMessage(
                     plugin,
                     sender,
-                    FAILURE + "Factions is not enabled on this server.");
+                    failure("Factions is not enabled on this server."));
                 return;
             }
 
@@ -134,15 +134,15 @@ public class MoveWarpRunnable implements Runnable
                 sendMessage(
                     plugin,
                     sender,
-                    SUCCESS + "Moved faction warp to new location.");
+                    success("Moved faction warp to new location."));
             }
             else
             {
                 sendMessage(
                     plugin,
                     sender,
-                    FAILURE + "You cannot move a faction warp " +
-                        "to land that does not belong to your faction.");
+                    failure("You cannot move a faction warp " +
+                        "to land that does not belong to your faction."));
             }
         }
         else
@@ -164,7 +164,7 @@ public class MoveWarpRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                SUCCESS + "Moved normal warp to new location.");
+                success("Moved normal warp to new location."));
         }
     }
 

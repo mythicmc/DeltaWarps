@@ -18,11 +18,10 @@ package com.gmail.tracebachi.DeltaWarps;
 
 import com.gmail.tracebachi.DeltaEssentials.Events.PlayerPostLoadEvent;
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
-import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
-import com.gmail.tracebachi.DeltaRedis.Shared.SplitPatterns;
+import com.gmail.tracebachi.DeltaRedis.Shared.Interfaces.Registerable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Interfaces.Shutdownable;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
-import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisMessageEvent;
+import com.gmail.tracebachi.DeltaRedis.Spigot.Events.DeltaRedisMessageEvent;
 import com.gmail.tracebachi.DeltaWarps.Runnables.DeleteFactionWarpsOnLeaveRunnable;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.massivecraft.factions.entity.MPlayer;
@@ -39,13 +38,12 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.SUCCESS;
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
-import static com.massivecraft.factions.event.EventFactionsMembershipChange.MembershipChangeReason.DISBAND;
-import static com.massivecraft.factions.event.EventFactionsMembershipChange.MembershipChangeReason.KICK;
-import static com.massivecraft.factions.event.EventFactionsMembershipChange.MembershipChangeReason.LEAVE;
+import static com.gmail.tracebachi.DeltaWarps.Settings.input;
+import static com.gmail.tracebachi.DeltaWarps.Settings.success;
+import static com.massivecraft.factions.event.EventFactionsMembershipChange.MembershipChangeReason.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
@@ -95,9 +93,9 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
     {
         if(event.getChannel().equals(WARP_CHANNEL))
         {
-            String[] splitMessage = SplitPatterns.DELTA.split(event.getMessage(), 2);
-            String name = splitMessage[0];
-            Warp warp = Warp.fromString(splitMessage[1]);
+            List<String> messageParts = event.getMessageParts();
+            String name = messageParts.get(0);
+            Warp warp = Warp.fromString(messageParts.get(1));
             Player player = Bukkit.getPlayerExact(name);
 
             if(player == null)
@@ -174,7 +172,7 @@ public class DeltaWarpsListener implements Listener, Registerable, Shutdownable
 
     private void warpPlayerWithEvent(Player player, Location location, Warp warp)
     {
-        player.sendMessage(SUCCESS + "Warping to " + input(warp.getName()) + " ...");
+        player.sendMessage(success("Warping to " + input(warp.getName()) + " ..."));
 
         PlayerWarpEvent event = new PlayerWarpEvent(player, location);
         Bukkit.getPluginManager().callEvent(event);

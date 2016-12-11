@@ -25,8 +25,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -75,7 +75,7 @@ public class AddServerWarpRunnable implements Runnable
                 sendMessage(
                     plugin,
                     sender,
-                    SUCCESS + "Created server warp " + input(warp.getName()));
+                    success("Created server warp " + input(warp.getName())));
             }
         }
         catch(SQLException ex)
@@ -85,7 +85,7 @@ public class AddServerWarpRunnable implements Runnable
                 sendMessage(
                     plugin,
                     sender,
-                    FAILURE + "Failed to create warp. Name is already in use.");
+                    failure("Failed to create warp. Name is already in use."));
             }
             else
             {
@@ -94,7 +94,7 @@ public class AddServerWarpRunnable implements Runnable
                 sendMessage(
                     plugin,
                     sender,
-                    FAILURE + "Something went wrong. Please inform the developer.");
+                    failure("Something went wrong. Please inform the developer."));
             }
         }
     }

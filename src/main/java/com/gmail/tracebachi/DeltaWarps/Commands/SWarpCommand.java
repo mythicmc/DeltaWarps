@@ -17,8 +17,8 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
-import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Interfaces.Registerable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Interfaces.Shutdownable;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.AddServerWarpRunnable;
@@ -30,7 +30,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -67,7 +67,7 @@ public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
     {
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(FAILURE + "Only players can add warps.");
+            sender.sendMessage(failure("Only players can add warps."));
             return true;
         }
 
@@ -81,7 +81,7 @@ public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
 
         if(args.length == 0)
         {
-            player.sendMessage(INFO + "/swarp <warp name>");
+            player.sendMessage(info("/swarp <warp name>"));
             return true;
         }
 
@@ -89,13 +89,13 @@ public class SWarpCommand implements CommandExecutor, Registerable, Shutdownable
 
         if(IWarpCommand.reserved.contains(warpName))
         {
-            sender.sendMessage(FAILURE + input(warpName) + " is a reserved name.");
+            sender.sendMessage(failure(input(warpName) + " is a reserved name."));
             return true;
         }
 
         if(warpName.length() > 31)
         {
-            player.sendMessage(FAILURE + "Warp name size is restricted to 32 or less characters.");
+            player.sendMessage(failure("Warp name size is restricted to 32 or less characters."));
             return true;
         }
 

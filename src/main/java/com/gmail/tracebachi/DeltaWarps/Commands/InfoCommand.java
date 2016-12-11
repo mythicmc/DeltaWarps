@@ -30,8 +30,8 @@ import com.massivecraft.factions.entity.MPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
+import static com.gmail.tracebachi.DeltaWarps.Settings.failure;
+import static com.gmail.tracebachi.DeltaWarps.Settings.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
@@ -62,7 +62,7 @@ public class InfoCommand implements IWarpCommand
         {
             if(args.length < 3)
             {
-                sender.sendMessage(FAILURE + "Warp name not specified.");
+                sender.sendMessage(failure("Warp name not specified."));
             }
             else
             {
@@ -84,7 +84,7 @@ public class InfoCommand implements IWarpCommand
         {
             if(!Settings.isFactionsEnabled())
             {
-                sender.sendMessage(FAILURE + "Factions is not enabled on this server.");
+                sender.sendMessage(failure("Factions is not enabled on this server."));
                 return;
             }
 
@@ -92,7 +92,7 @@ public class InfoCommand implements IWarpCommand
             {
                 if(args.length < 3)
                 {
-                    sender.sendMessage(FAILURE + "No faction specified.");
+                    sender.sendMessage(failure("No faction specified."));
                 }
                 else
                 {
@@ -101,8 +101,8 @@ public class InfoCommand implements IWarpCommand
 
                     if(faction == null)
                     {
-                        sender.sendMessage(FAILURE + input(factionName) +
-                            " does not exist on this server.");
+                        sender.sendMessage(failure(input(factionName) +
+                            " does not exist on this server."));
                     }
                     else
                     {
@@ -119,8 +119,8 @@ public class InfoCommand implements IWarpCommand
 
                     if(faction == null)
                     {
-                        sender.sendMessage(FAILURE + input(factionName) +
-                            " does not exist on this server.");
+                        sender.sendMessage(failure(input(factionName) +
+                            " does not exist on this server."));
                     }
                     else
                     {
@@ -136,7 +136,7 @@ public class InfoCommand implements IWarpCommand
         }
         else
         {
-            sender.sendMessage(FAILURE + "Unknown info type. Only W, P, and F are valid.");
+            sender.sendMessage(failure("Unknown info type. Only W, P, and F are valid."));
         }
     }
 

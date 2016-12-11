@@ -31,8 +31,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -62,7 +61,7 @@ public class AddCommand implements IWarpCommand
 
         if(!(sender instanceof Player))
         {
-            sender.sendMessage(FAILURE + "Only players can add warps.");
+            sender.sendMessage(failure("Only players can add warps."));
             return;
         }
 
@@ -70,25 +69,25 @@ public class AddCommand implements IWarpCommand
 
         if(!player.hasPermission("DeltaWarps.Add"))
         {
-            player.sendMessage(Settings.noPermission("DeltaWarps.Add"));
+            player.sendMessage(noPermission("DeltaWarps.Add"));
             return;
         }
 
         if(!Settings.isWarpEditingEnabled() && !player.hasPermission("DeltaWarps.Staff.Add"))
         {
-            player.sendMessage(FAILURE + "Adding warps is not enabled on this server.");
+            player.sendMessage(failure("Adding warps is not enabled on this server."));
             return;
         }
 
         if(reserved.contains(warpName))
         {
-            player.sendMessage(FAILURE + input(warpName) + " is a reserved name.");
+            player.sendMessage(failure(input(warpName) + " is a reserved name."));
             return;
         }
 
         if(warpName.length() > 31)
         {
-            player.sendMessage(FAILURE + "Warp name size is restricted to 32 or less characters.");
+            player.sendMessage(failure("Warp name size is restricted to 32 or less characters."));
             return;
         }
 
@@ -96,7 +95,7 @@ public class AddCommand implements IWarpCommand
 
         if(type == WarpType.UNKNOWN)
         {
-            player.sendMessage(FAILURE + "Unknown warp type: " + input(warpTypeString));
+            player.sendMessage(failure("Unknown warp type: " + input(warpTypeString)));
             return;
         }
 
@@ -107,7 +106,7 @@ public class AddCommand implements IWarpCommand
         {
             if(!Settings.isFactionsEnabled())
             {
-                player.sendMessage(FAILURE + "Factions is not enabled on this server.");
+                player.sendMessage(failure("Factions is not enabled on this server."));
                 return;
             }
 
@@ -118,15 +117,15 @@ public class AddCommand implements IWarpCommand
 
             if(!mPlayer.hasFaction())
             {
-                player.sendMessage(FAILURE +
-                    "Faction warps cannot be created without a faction.");
+                player.sendMessage(failure(
+                    "Faction warps cannot be created without a faction."));
                 return;
             }
 
             if(!mPlayer.getFactionId().equals(facAtPos.getId()))
             {
-                player.sendMessage(FAILURE +
-                    "Faction warps can only be created on land owned by your faction.");
+                player.sendMessage(failure(
+                    "Faction warps can only be created on land owned by your faction."));
                 return;
             }
 

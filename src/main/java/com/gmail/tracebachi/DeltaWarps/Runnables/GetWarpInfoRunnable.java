@@ -26,9 +26,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -86,14 +86,14 @@ public class GetWarpInfoRunnable implements Runnable
                                 plugin,
                                 sender,
                                 Arrays.asList(
-                                    INFO + "Warp information for " + input(warpName),
-                                    INFO + "X: " + input(x),
-                                    INFO + "Y: " + input(y),
-                                    INFO + "Z: " + input(z),
-                                    INFO + "World: " + input(world),
-                                    INFO + "Type: " + input(type),
-                                    INFO + "Owner: " + input(owner),
-                                    INFO + "Server: " + input(server)
+                                    info("Warp information for " + input(warpName)),
+                                    info("X: " + input(x)),
+                                    info("Y: " + input(y)),
+                                    info("Z: " + input(z)),
+                                    info("World: " + input(world)),
+                                    info("Type: " + input(type)),
+                                    info("Owner: " + input(owner)),
+                                    info("Server: " + input(server))
                                 ));
                         }
                         else
@@ -102,11 +102,11 @@ public class GetWarpInfoRunnable implements Runnable
                                 plugin,
                                 sender,
                                 Arrays.asList(
-                                    INFO + "Warp information for " + input(warpName),
-                                    INFO + "World: " + input(world),
-                                    INFO + "Type: " + input(type),
-                                    INFO + "Owner: " + input(owner),
-                                    INFO + "Server: " + input(server)
+                                    info("Warp information for " + input(warpName)),
+                                    info("World: " + input(world)),
+                                    info("Type: " + input(type)),
+                                    info("Owner: " + input(owner)),
+                                    info("Server: " + input(server))
                                 ));
                         }
                     }
@@ -115,7 +115,7 @@ public class GetWarpInfoRunnable implements Runnable
                         sendMessage(
                             plugin,
                             sender,
-                            FAILURE + input(warpName) + " does not exist.");
+                            failure(input(warpName) + " does not exist."));
                     }
                 }
             }
@@ -127,7 +127,7 @@ public class GetWarpInfoRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "Something went wrong. Please inform the developer.");
+                failure("Something went wrong. Please inform the developer."));
         }
     }
 }

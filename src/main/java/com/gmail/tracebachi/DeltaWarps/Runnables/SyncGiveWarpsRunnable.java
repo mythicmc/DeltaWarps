@@ -26,7 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -90,19 +90,19 @@ public class SyncGiveWarpsRunnable implements Runnable
                 {
                     updatePlayer(connection, currentNormal, (short) 0);
 
-                    sender.sendMessage(SUCCESS + "Updated faction warps for " +
+                    sender.sendMessage(success("Updated faction warps for " +
                         input(receiver) + " from " +
                         input(currentFaction) + " to " +
-                        input(0));
+                        input(0)));
                 }
                 else
                 {
                     updatePlayer(connection, currentNormal, (short) (currentFaction + amount));
 
-                    sender.sendMessage(SUCCESS + "Updated faction warps for " +
+                    sender.sendMessage(success("Updated faction warps for " +
                         input(receiver) + " from " +
                         input(currentFaction) + " to " +
-                        input(currentFaction + amount));
+                        input(currentFaction + amount)));
                 }
             }
             else
@@ -111,19 +111,19 @@ public class SyncGiveWarpsRunnable implements Runnable
                 {
                     updatePlayer(connection, (short) 0, currentFaction);
 
-                    sender.sendMessage(SUCCESS + "Updated normal warps for " +
+                    sender.sendMessage(success("Updated normal warps for " +
                         input(receiver) + " from " +
                         input(currentNormal) + " to " +
-                        input(0));
+                        input(0)));
                 }
                 else
                 {
                     updatePlayer(connection, (short) (currentNormal + amount), currentFaction);
 
-                    sender.sendMessage(SUCCESS + "Updated normal warps for " +
+                    sender.sendMessage(success("Updated normal warps for " +
                         input(receiver) + " from " +
                         input(currentNormal) + " to " +
-                        input(currentNormal + amount));
+                        input(currentNormal + amount)));
                 }
             }
         }
@@ -131,8 +131,8 @@ public class SyncGiveWarpsRunnable implements Runnable
         {
             ex.printStackTrace();
 
-            sender.sendMessage(FAILURE +
-                "Something went wrong. Please inform the developer.");
+            sender.sendMessage(failure(
+                "Something went wrong. Please inform the developer."));
         }
     }
 

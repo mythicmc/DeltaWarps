@@ -25,8 +25,8 @@ import com.google.common.base.Preconditions;
 
 import java.sql.*;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -103,7 +103,7 @@ public class AddWarpRunnable implements Runnable
                         sendMessage(
                             plugin,
                             sender,
-                            FAILURE + "You do not have enough free warps to make a faction warp.");
+                            failure("You do not have enough free warps to make a faction warp."));
                     }
                     else if(warp.getType() != WarpType.FACTION &&
                         normalCount >= (groupLimits.getNormal() + extraNormal))
@@ -111,7 +111,7 @@ public class AddWarpRunnable implements Runnable
                         sendMessage(
                             plugin,
                             sender,
-                            FAILURE + "You do not have enough free warps to make a normal warp.");
+                            failure("You do not have enough free warps to make a normal warp."));
                     }
                     else
                     {
@@ -120,9 +120,9 @@ public class AddWarpRunnable implements Runnable
                         sendMessage(
                             plugin,
                             sender,
-                            SUCCESS + "Created a new " +
+                            success("Created a new " +
                                 input(warp.getType()) + " warp named " +
-                                input(warp.getName()));
+                                input(warp.getName())));
                     }
                 }
                 catch(SQLException ex)
@@ -132,7 +132,7 @@ public class AddWarpRunnable implements Runnable
                         sendMessage(
                             plugin,
                             sender,
-                            FAILURE + "Failed to create warp. Name is already in use.");
+                            failure("Failed to create warp. Name is already in use."));
                     }
                     else
                     {
@@ -145,8 +145,8 @@ public class AddWarpRunnable implements Runnable
                 sendMessage(
                     plugin,
                     sender,
-                    FAILURE + "Failed to find or insert player. " +
-                        "Please report this to the developer.");
+                    failure("Failed to find or insert player. " +
+                        "Please report this to the developer."));
             }
         }
         catch(SQLException ex)
@@ -156,7 +156,7 @@ public class AddWarpRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "Something went wrong. Please report this to the developer.");
+                failure("Something went wrong. Please report this to the developer."));
         }
     }
 

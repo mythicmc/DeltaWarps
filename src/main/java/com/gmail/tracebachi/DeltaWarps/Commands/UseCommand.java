@@ -17,12 +17,14 @@
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
 import com.gmail.tracebachi.DeltaExecutor.DeltaExecutor;
-import com.gmail.tracebachi.DeltaRedis.Shared.Prefixes;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import com.gmail.tracebachi.DeltaWarps.Runnables.GetWarpForUseRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import static com.gmail.tracebachi.DeltaWarps.Settings.failure;
+import static com.gmail.tracebachi.DeltaWarps.Settings.input;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -49,7 +51,7 @@ public class UseCommand implements IWarpCommand
         {
             if(!(sender instanceof Player))
             {
-                sender.sendMessage(Prefixes.FAILURE + "Only players can use warps.");
+                sender.sendMessage(failure("Only players can use warps."));
                 return;
             }
 
@@ -57,7 +59,7 @@ public class UseCommand implements IWarpCommand
 
             if(args[0].length() > 31)
             {
-                player.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
+                player.sendMessage(failure("Warp name size is restricted to 32 or less characters."));
                 return;
             }
 
@@ -67,7 +69,7 @@ public class UseCommand implements IWarpCommand
 
             if(!canUse && !canUseFaction && !canUseSpecial)
             {
-                player.sendMessage(Prefixes.FAILURE + "You do not have permission to use any warps.");
+                player.sendMessage(failure("You do not have permission to use any warps."));
                 return;
             }
 
@@ -79,13 +81,13 @@ public class UseCommand implements IWarpCommand
         {
             if(!sender.hasPermission("DeltaWarps.Staff.ForceUse"))
             {
-                sender.sendMessage(Prefixes.FAILURE + "You do not have permission to do that.");
+                sender.sendMessage(failure("You do not have permission to do that."));
                 return;
             }
 
             if(args[0].length() >= 30)
             {
-                sender.sendMessage(Prefixes.FAILURE + "Warp name size is restricted to 32 or less characters.");
+                sender.sendMessage(failure("Warp name size is limited to 32 or less characters."));
                 return;
             }
 
@@ -93,7 +95,7 @@ public class UseCommand implements IWarpCommand
 
             if(warper == null)
             {
-                sender.sendMessage(Prefixes.FAILURE + Prefixes.input(args[1]) + " is not online.");
+                sender.sendMessage(failure(input(args[1]) + " is not online."));
                 return;
             }
 

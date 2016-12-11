@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -69,7 +69,7 @@ public class ListWarpsRunnable implements Runnable
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     List<String> messages = new ArrayList<>(75);
-                    String header = INFO + "Warp list (Page " + input(pageOffset) + "): ";
+                    String header = info("Warp list (Page " + input(pageOffset) + "): ");
 
                     while(resultSet.next())
                     {
@@ -91,7 +91,7 @@ public class ListWarpsRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "Something went wrong. Please inform the developer.");
+                failure("Something went wrong. Please inform the developer."));
         }
     }
 }

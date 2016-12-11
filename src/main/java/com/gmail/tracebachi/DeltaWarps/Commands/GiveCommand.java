@@ -21,8 +21,9 @@ import com.gmail.tracebachi.DeltaWarps.Settings;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpType;
 import org.bukkit.command.CommandSender;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.FAILURE;
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.input;
+import static com.gmail.tracebachi.DeltaWarps.Settings.failure;
+import static com.gmail.tracebachi.DeltaWarps.Settings.input;
+
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -49,8 +50,8 @@ public class GiveCommand implements IWarpCommand
 
         if(type == WarpType.UNKNOWN)
         {
-            sender.sendMessage(FAILURE + "Unknown warp type: " +
-                input(warpTypeString));
+            sender.sendMessage(failure("Unknown warp type: " +
+                input(warpTypeString)));
             return;
         }
 
@@ -58,8 +59,8 @@ public class GiveCommand implements IWarpCommand
 
         if(amount == null || amount == 0)
         {
-            sender.sendMessage(FAILURE + "Invalid number: " +
-                input(amountString));
+            sender.sendMessage(failure("Invalid number: " +
+                input(amountString)));
             return;
         }
 

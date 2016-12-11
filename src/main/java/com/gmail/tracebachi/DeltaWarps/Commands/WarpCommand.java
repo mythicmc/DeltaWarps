@@ -16,15 +16,16 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Commands;
 
-import com.gmail.tracebachi.DeltaRedis.Shared.Registerable;
-import com.gmail.tracebachi.DeltaRedis.Shared.Shutdownable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Interfaces.Registerable;
+import com.gmail.tracebachi.DeltaRedis.Shared.Interfaces.Shutdownable;
 import com.gmail.tracebachi.DeltaRedis.Spigot.DeltaRedisApi;
 import com.gmail.tracebachi.DeltaWarps.DeltaWarps;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.INFO;
+import static com.gmail.tracebachi.DeltaWarps.Settings.info;
+
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -92,13 +93,13 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
     {
         if(args.length == 0)
         {
-            sender.sendMessage(INFO + "/warp [add, remove, move, info, list, give]");
+            sender.sendMessage(info("/warp [add, remove, move, info, list, give]"));
         }
         else if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("set"))
         {
             if(args.length < 2)
             {
-                sender.sendMessage(INFO + "/warp add <warp name> [public|faction|private]");
+                sender.sendMessage(info("/warp add <warp name> [public|faction|private]"));
             }
             else
             {
@@ -109,7 +110,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 2)
             {
-                sender.sendMessage(INFO + "/warp remove <warp name>");
+                sender.sendMessage(info("/warp remove <warp name>"));
             }
             else
             {
@@ -120,7 +121,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 2)
             {
-                sender.sendMessage(INFO + "/warp move <warp name>");
+                sender.sendMessage(info("/warp move <warp name>"));
             }
             else
             {
@@ -131,9 +132,9 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 2)
             {
-                sender.sendMessage(INFO + "/warp info w <warp name>");
-                sender.sendMessage(INFO + "/warp info p");
-                sender.sendMessage(INFO + "/warp info f");
+                sender.sendMessage(info("/warp info w <warp name>"));
+                sender.sendMessage(info("/warp info p"));
+                sender.sendMessage(info("/warp info f"));
             }
             else
             {
@@ -144,7 +145,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 1)
             {
-                sender.sendMessage(INFO + "/warp list [page]");
+                sender.sendMessage(info("/warp list [page]"));
             }
             else
             {
@@ -155,7 +156,7 @@ public class WarpCommand implements CommandExecutor, Registerable, Shutdownable
         {
             if(args.length < 4)
             {
-                sender.sendMessage(INFO + "/warp give <player> <public|faction|private> <amount>");
+                sender.sendMessage(info("/warp give <player> <public|faction|private> <amount>"));
             }
             else
             {

@@ -29,9 +29,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -77,7 +77,7 @@ public class GetPlayerWarpsRunnable implements Runnable
             Integer counter = 0;
             List<String> messages = new ArrayList<>(4);
 
-            messages.add(INFO + "Player warp information for " + input(player));
+            messages.add(info("Player warp information for " + input(player)));
 
             try(PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER))
             {
@@ -96,11 +96,11 @@ public class GetPlayerWarpsRunnable implements Runnable
                         factionExtra = String.valueOf(resultSet.getShort("faction"));
                     }
 
-                    messages.add(INFO + "Available Warps:");
-                    messages.add(INFO +
+                    messages.add(info("Available Warps:"));
+                    messages.add(info(
                         "Normal: " + input(normalLimit + " + " + normalExtra) + ", " +
-                        "Faction: " + input(factionLimit + " + " + factionExtra));
-                    messages.add(INFO + "Owned Warps:");
+                        "Faction: " + input(factionLimit + " + " + factionExtra)));
+                    messages.add(info("Owned Warps:"));
                 }
             }
 
@@ -120,19 +120,19 @@ public class GetPlayerWarpsRunnable implements Runnable
 
                         if(type == WarpType.PRIVATE && canSeePrivateWarps)
                         {
-                            messages.add(INFO +
+                            messages.add(info(
                                 input(counter) + ". " +
                                 input(name) + " on " +
                                 input(server) + ", " +
-                                input(type.name().toLowerCase()));
+                                input(type.name().toLowerCase())));
                         }
                         else
                         {
-                            messages.add(INFO +
+                            messages.add(info(
                                 input(counter) + ". " +
                                 input(name) + " on " +
                                 input(server) + ", " +
-                                input(type.name().toLowerCase()));
+                                input(type.name().toLowerCase())));
                         }
                     }
 
@@ -147,7 +147,7 @@ public class GetPlayerWarpsRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "Something went wrong. Please inform the developer.");
+                failure("Something went wrong. Please inform the developer."));
         }
     }
 }

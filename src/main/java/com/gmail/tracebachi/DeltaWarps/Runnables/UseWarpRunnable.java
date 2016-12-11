@@ -32,7 +32,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/19/15.
@@ -74,7 +74,7 @@ public class UseWarpRunnable implements Runnable
         {
             if(isForceWarpUse)
             {
-                sendMessage(FAILURE + input(warper) + " is no longer online.");
+                sendMessage(failure(input(warper) + " is no longer online."));
             }
             return;
         }
@@ -121,7 +121,7 @@ public class UseWarpRunnable implements Runnable
         {
             if(!canUseNormal)
             {
-                player.sendMessage(FAILURE + "You do not have permission to use public warps.");
+                player.sendMessage(failure("You do not have permission to use public warps."));
                 return;
             }
 
@@ -131,13 +131,13 @@ public class UseWarpRunnable implements Runnable
         {
             if(!canUseNormal)
             {
-                player.sendMessage(FAILURE + "You do not have permission to use private warps.");
+                player.sendMessage(failure("You do not have permission to use private warps."));
                 return;
             }
 
             if(!isOwner && !canUseOthers)
             {
-                player.sendMessage(FAILURE + "You do not have access to that private warp.");
+                player.sendMessage(failure("You do not have access to that private warp."));
                 return;
             }
 
@@ -147,13 +147,13 @@ public class UseWarpRunnable implements Runnable
         {
             if(!Settings.isFactionsEnabled())
             {
-                player.sendMessage(FAILURE + "Factions is not enabled on this server.");
+                player.sendMessage(failure("Factions is not enabled on this server."));
                 return;
             }
 
             if(!canUseFaction)
             {
-                player.sendMessage(FAILURE + "You do not have permission to use faction warps.");
+                player.sendMessage(failure("You do not have permission to use faction warps."));
                 return;
             }
 
@@ -163,7 +163,7 @@ public class UseWarpRunnable implements Runnable
 
             if(!factionAtPos.getId().equals(warp.getFaction()))
             {
-                player.sendMessage(FAILURE + "Whoops! That faction warp shouldn't exist! Deleting ...");
+                player.sendMessage(failure("Whoops! That faction warp shouldn't exist! Deleting ..."));
 
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "warp remove " + warp.getName());
                 return;
@@ -175,7 +175,7 @@ public class UseWarpRunnable implements Runnable
             }
             else
             {
-                player.sendMessage(FAILURE + "You are not in the same faction as the warp.");
+                player.sendMessage(failure("You are not in the same faction as the warp."));
             }
         }
     }
@@ -187,15 +187,15 @@ public class UseWarpRunnable implements Runnable
 
         if(!api.getCachedServers().contains(warp.getServer()))
         {
-            player.sendMessage(FAILURE + "The server with that warp (" +
-                input(warp.getServer()) + ") is offline.");
+            player.sendMessage(failure("The server with that warp (" +
+                input(warp.getServer()) + ") is offline."));
             return;
         }
 
         if(warp.getType() == WarpType.FACTION)
         {
-            player.sendMessage(FAILURE + "That warp is a faction warp in " +
-                input(warp.getServer()) + " and can only be used in that server.");
+            player.sendMessage(failure("That warp is a faction warp in " +
+                input(warp.getServer()) + " and can only be used in that server."));
             return;
         }
 
@@ -203,7 +203,7 @@ public class UseWarpRunnable implements Runnable
         {
             if(!canUseNormal)
             {
-                player.sendMessage(FAILURE + "You do not have permission to use public warps.");
+                player.sendMessage(failure("You do not have permission to use public warps."));
                 return;
             }
         }
@@ -211,18 +211,18 @@ public class UseWarpRunnable implements Runnable
         {
             if(!canUseNormal)
             {
-                player.sendMessage(FAILURE + "You do not have permission to use private warps.");
+                player.sendMessage(failure("You do not have permission to use private warps."));
                 return;
             }
 
             if(!isOwner && !canUseOthers)
             {
-                player.sendMessage(FAILURE + "You do not have access to that private warp.");
+                player.sendMessage(failure("You do not have access to that private warp."));
                 return;
             }
         }
 
-        player.sendMessage(SUCCESS + "Warping to " + input(warp.getName()) + " ...");
+        player.sendMessage(success("Warping to " + input(warp.getName()) + " ..."));
 
         api.publish(
             warp.getServer(),
@@ -244,7 +244,7 @@ public class UseWarpRunnable implements Runnable
 
     private void warpPlayerWithEvent(Player player, Location location)
     {
-        player.sendMessage(SUCCESS + "Warping to " + input(warp.getName()) + " ...");
+        player.sendMessage(success("Warping to " + input(warp.getName()) + " ..."));
 
         PlayerWarpEvent event = new PlayerWarpEvent(player, location);
         Bukkit.getPluginManager().callEvent(event);

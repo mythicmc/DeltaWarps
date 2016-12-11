@@ -27,9 +27,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gmail.tracebachi.DeltaRedis.Shared.Prefixes.*;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessage;
 import static com.gmail.tracebachi.DeltaWarps.RunnableMessageUtil.sendMessages;
+import static com.gmail.tracebachi.DeltaWarps.Settings.*;
 
 /**
  * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
@@ -77,16 +77,16 @@ public class GetFactionWarpsRunnable implements Runnable
                 try(ResultSet resultSet = statement.executeQuery())
                 {
                     List<String> messages = new ArrayList<>(4);
-                    messages.add(INFO + "Faction warp information for " +
-                        input(factionName) + " on " + input(serverName));
+                    messages.add(info("Faction warp information for " +
+                        input(factionName) + " on " + input(serverName)));
 
                     while(resultSet.next())
                     {
                         String warpName = resultSet.getString("deltawarps_warp.name");
                         String owner = resultSet.getString("deltawarps_player.name");
 
-                        messages.add(INFO + input(warpName) +
-                            " owned by " + input(owner));
+                        messages.add(info(input(warpName) +
+                            " owned by " + input(owner)));
                     }
 
                     sendMessages(plugin, sender, messages);
@@ -100,7 +100,7 @@ public class GetFactionWarpsRunnable implements Runnable
             sendMessage(
                 plugin,
                 sender,
-                FAILURE + "Something went wrong. Please inform the developer.");
+                failure("Something went wrong. Please inform the developer."));
         }
     }
 }
