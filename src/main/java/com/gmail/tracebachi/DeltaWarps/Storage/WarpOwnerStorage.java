@@ -18,26 +18,25 @@
 package com.gmail.tracebachi.DeltaWarps.Storage;
 
 /**
- * * @author GeeItsZee (tracebachi@gmail.com)
+ * @author GeeItsZee (tracebachi@gmail.com)
  */
-public enum WarpType
+public interface WarpOwnerStorage
 {
-  PUBLIC,
-  FACTION,
-  PRIVATE;
+  boolean createTable() throws Exception;
 
-  public static WarpType fromString(String type)
+  WarpOwner getById(int id);
+
+  WarpOwner getByName(String ownerName);
+
+  Result add(WarpOwner warpOwner);
+
+  Result updateByName(WarpOwner warpOwner);
+
+  enum Result
   {
-    switch (type.toLowerCase())
-    {
-      case "faction":
-        return FACTION;
-      case "private":
-        return PRIVATE;
-      case "public":
-        return PUBLIC;
-      default:
-        return null;
-    }
+    SUCCESS,
+    WARP_OWNER_NAME_EXISTS,
+    WARP_OWNER_NOT_FOUND,
+    EXCEPTION
   }
 }

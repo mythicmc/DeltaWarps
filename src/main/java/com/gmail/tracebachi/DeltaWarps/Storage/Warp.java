@@ -1,142 +1,235 @@
 /*
- * This file is part of DeltaWarps.
+ * DeltaWarps - Warping plugin for BungeeCord and Spigot servers
+ * Copyright (C) 2017 tracebachi@gmail.com (GeeItsZee)
  *
- * DeltaWarps is free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * DeltaWarps is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with DeltaWarps.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.gmail.tracebachi.DeltaWarps.Storage;
 
-import com.google.common.base.Preconditions;
 import org.bukkit.Location;
 
-import java.util.regex.Pattern;
-
 /**
- * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
+ * * @author GeeItsZee (tracebachi@gmail.com)
  */
 public class Warp
 {
-    private final static Pattern separator = Pattern.compile(",");
+  private String name;
+  private int ownerId;
+  private int x;
+  private int y;
+  private int z;
+  private float yaw;
+  private float pitch;
+  private String world;
+  private WarpType type;
+  private String faction;
+  private String server;
 
-    private final String name;
-    private final int x;
-    private final int y;
-    private final int z;
-    private final float yaw;
-    private final float pitch;
-    private final String world;
-    private final WarpType type;
-    private final String faction;
-    private final String server;
+  public String getName()
+  {
+    return name;
+  }
 
-    public Warp(String name, Location location, WarpType type, String faction, String server)
-    {
-        this(name, location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-            location.getYaw(), location.getPitch(), location.getWorld().getName(),
-            type, faction, server);
-    }
+  public void setName(String name)
+  {
+    this.name = name;
+  }
 
-    public Warp(String name, int x, int y, int z, float yaw, float pitch, String world,
-        WarpType type, String faction, String server)
-    {
-        Preconditions.checkNotNull(name);
-        Preconditions.checkNotNull(world);
-        Preconditions.checkNotNull(type);
-        Preconditions.checkNotNull(server);
+  public int getOwnerId()
+  {
+    return ownerId;
+  }
 
-        this.name = name.toLowerCase();
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.yaw = Math.round(yaw);
-        this.pitch = Math.round(pitch);
-        this.world = world;
-        this.type = type;
-        this.faction = faction;
-        this.server = server;
-    }
+  public void setOwnerId(int ownerId)
+  {
+    this.ownerId = ownerId;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public int getX()
+  {
+    return x;
+  }
 
-    public int getX()
-    {
-        return x;
-    }
+  public void setX(int x)
+  {
+    this.x = x;
+  }
 
-    public int getY()
-    {
-        return y;
-    }
+  public int getY()
+  {
+    return y;
+  }
 
-    public int getZ()
-    {
-        return z;
-    }
+  public void setY(int y)
+  {
+    this.y = y;
+  }
 
-    public float getYaw()
-    {
-        return yaw;
-    }
+  public int getZ()
+  {
+    return z;
+  }
 
-    public float getPitch()
-    {
-        return pitch;
-    }
+  public void setZ(int z)
+  {
+    this.z = z;
+  }
 
-    public String getWorld()
-    {
-        return world;
-    }
+  public float getYaw()
+  {
+    return yaw;
+  }
 
-    public WarpType getType()
-    {
-        return type;
-    }
+  public void setYaw(float yaw)
+  {
+    this.yaw = yaw;
+  }
 
-    public String getFaction()
-    {
-        return faction;
-    }
+  public float getPitch()
+  {
+    return pitch;
+  }
 
-    public String getServer()
-    {
-        return server;
-    }
+  public void setPitch(float pitch)
+  {
+    this.pitch = pitch;
+  }
 
-    @Override
-    public String toString()
-    {
-        return name + "," + x + "," + y + "," + z + "," + yaw + "," + pitch +
-            "," + world + "," + type + "," + faction + "," + server;
-    }
+  public String getWorld()
+  {
+    return world;
+  }
 
-    public static Warp fromString(String source)
-    {
-        String[] fields = separator.split(source, 10);
-        String name = fields[0];
-        int x = Integer.parseInt(fields[1]);
-        int y = Integer.parseInt(fields[2]);
-        int z = Integer.parseInt(fields[3]);
-        float yaw = Float.parseFloat(fields[4]);
-        float pitch = Float.parseFloat(fields[5]);
-        String world = fields[6];
-        WarpType type = WarpType.fromString(fields[7]);
-        String faction = fields[8];
-        String server = fields[9];
+  public void setWorld(String world)
+  {
+    this.world = world;
+  }
 
-        return new Warp(name, x, y, z, yaw, pitch, world, type, faction, server);
-    }
+  public void setLocation(Location location)
+  {
+    this.x = location.getBlockX();
+    this.y = location.getBlockY();
+    this.z = location.getBlockZ();
+    this.yaw = Math.round(location.getYaw());
+    this.pitch = Math.round(location.getPitch());
+    this.world = location.getWorld().getName();
+  }
+
+  public WarpType getType()
+  {
+    return type;
+  }
+
+  public void setType(WarpType type)
+  {
+    this.type = type;
+  }
+
+  public String getFaction()
+  {
+    return faction;
+  }
+
+  public void setFaction(String faction)
+  {
+    this.faction = faction;
+  }
+
+  public String getServer()
+  {
+    return server;
+  }
+
+  public void setServer(String server)
+  {
+    this.server = server;
+  }
+
+  //  public Warp(String name, Location location, WarpType type, String faction, String server)
+//  {
+//    this(name, location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getYaw(),
+//      location.getPitch(), location.getWorld().getName(), type, faction, server);
+//  }
+//
+//  public Warp(
+//    String name, int x, int y, int z, float yaw, float pitch, String world, WarpType type,
+//    String faction, String server)
+//  {
+//    Preconditions.checkNotNull(name, "name");
+//    Preconditions.checkNotNull(world, "world");
+//    Preconditions.checkNotNull(type, "type");
+//    Preconditions.checkNotNull(server, "server");
+//
+//    this.name = name.toLowerCase();
+//    this.x = x;
+//    this.y = y;
+//    this.z = z;
+//    this.yaw = Math.round(yaw);
+//    this.pitch = Math.round(pitch);
+//    this.world = world;
+//    this.type = type;
+//    this.faction = faction;
+//    this.server = server;
+//  }
+//
+//  public String getName()
+//  {
+//    return name;
+//  }
+//
+//  public int getX()
+//  {
+//    return x;
+//  }
+//
+//  public int getY()
+//  {
+//    return y;
+//  }
+//
+//  public int getZ()
+//  {
+//    return z;
+//  }
+//
+//  public float getYaw()
+//  {
+//    return yaw;
+//  }
+//
+//  public float getPitch()
+//  {
+//    return pitch;
+//  }
+//
+//  public String getWorld()
+//  {
+//    return world;
+//  }
+//
+//  public WarpType getType()
+//  {
+//    return type;
+//  }
+//
+//  public String getFaction()
+//  {
+//    return faction;
+//  }
+//
+//  public String getServer()
+//  {
+//    return server;
+//  }
 }

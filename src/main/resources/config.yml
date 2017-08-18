@@ -1,22 +1,74 @@
-# DeltaWarps Configuration File
+###############################################################################
+# DeltaWarps Configuration File (Spigot)
+###############################################################################
 
-# DbShare Database name
-Database: Main
+# Name of the DataSource in DbShare
+DbShareDataSourceName: Main
 
-# Allow warps to be created, removed, or moved on this server
-WarpEditing: True
+# What is the name of the server warp owner?
+# (Try to add a special character in case a player takes the name)
+ServerWarpOwnerName: Mr.LobaLoba
+
+# Should Factions be supported if it is found on the server?
+TryToSupportFactions: True
+
+# Are players allowed to add warps on this server?
+AllowedToAddWarps: True
+
+# Are players allowed to move warps on this server?
+AllowedToMoveWarps: True
+
+# How many warps should be shown per page when listing warps?
+WarpListPageSize: 50
 
 # Default limits on the number of warps for a group.
-# Example: Add the "DeltaWarps.Group.Example" permission
-#          to add a player to a group.
+# Example: Add the "DeltaWarps.Group.Example" permission to add a player to a group.
 GroupLimits:
 
   # Name of the group
   Example:
-    # Number of normal warps (public + private)
+    # Number of public / private warps
     Normal: 2
     # Number of faction warps
     Faction: 0
 
-# Used for debugging DeltaWarps
+# Formatting
+Formats:
+
+  NoPerm: '&8[&c!&8] &cFailure &8[&c!&8]&7 You do not have the &f{0}&7 permission.'
+  Usage: '&8[&9!&8] &9Usage &8[&9!&8]&7 {0}'
+  PlayerOnlyCommand: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 can only be run by a player.'
+  PlayerOffline: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not online.'
+
+  InvalidAmount: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not a valid amount.'
+  InvalidWarpType: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not a valid warp type.'
+  InvalidWarpName: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not a valid warp name. Reason: &f{1}&7'
+  WarpOwnerUpdated: '&8[&a!&8] &aSuccess &8[&a!&8]&7 Warp owner, &f{0}&7, updated.'
+  WarpAdded: '&8[&a!&8] &aSuccess &8[&a!&8]&7 Warp, &f{0}&7 (&f{1}&7), created.'
+  WarpRemoved: '&8[&a!&8] &aSuccess &8[&a!&8]&7 Warp, &f{0}&7, removed.'
+  WarpMoved: '&8[&a!&8] &aSuccess &8[&a!&8]&7 Warp, &f{0}&7, moved.'
+  WarpingTo: '&8[&9!&8] &9Info &8[&9!&8]&7 Warping to &f{0}&7 ...'
+  WarpNotFound: '&8[&c!&8] &cFailure &8[&c!&8]&7 The warp with the name, &f{0}&7, does not exist.'
+  FactionNotFound: '&8[&c!&8] &cFailure &8[&c!&8]&7 The faction, &f{0}&7, does not exist.'
+  WarpNotOwnedByName: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not owned by &f{1}&7.'
+  UnexpectedError: '&8[&c!&8] &cFailure &8[&c!&8]&7 Please report this. &f{0}&7'
+
+  WarpInfo/Warp/Line: '&8[&9!&8] &9Info &8[&9!&8]&7 &f{0}&7: &f{1}&7'
+  WarpInfo/Player/Line: '&8[&9!&8] &9Info &8[&9!&8]&7 &f{0}&7: &f{1}&7'
+  WarpInfo/Player/Warp: '&8[&9!&8] &9Info &8[&9!&8]&7 &f{0}&7 (&f{1}&7) on &f{2}&7'
+  WarpInfo/Faction/Line: '&8[&9!&8] &9Info &8[&9!&8]&7 &f{0}&7: &f{1}&7'
+  WarpInfo/Faction/WarpName: '&8[&9!&8] &9Info &8[&9!&8]&7 &f{0}&7'
+  WarpList/Page: '&8[&9!&8] &9Info &8[&9!&8]&7 Page &f{0}&7 of Public Warps:'
+  WarpList/WarpName: '&8[&9!&8] &9Info &8[&9!&8]&7 &f{0}&7'
+
+  NotAllowedOnServer: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not allowed on this server.'
+  NotEnoughFreeWarpsForAdd: '&8[&c!&8] &cFailure &8[&c!&8]&7 You have reached your limit of &f{0}&7 &f{1}&7 warps.'
+  FactionsNotEnabled: '&8[&c!&8] &cFailure &8[&c!&8]&7 Factions is not enabled on this server.'
+  FactionWarp/RequiresAFaction: '&8[&c!&8] &cFailure &8[&c!&8]&7 Faction warps require a faction.'
+  FactionWarp/OnlyOnFactionLand: '&8[&c!&8] &cFailure &8[&c!&8]&7 Faction warps can only be created or moved around on faction land.'
+  FactionWarp/OnlyUsableOnSameServer: '&8[&c!&8] &cFailure &8[&c!&8]&7 Faction warps can only be used in the same server as the faction.'
+  FactionWarp/NotOwnedByYourFaction: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not owned by your faction.'
+  FactionWarp/NotOnFactionLand: '&8[&c!&8] &cFailure &8[&c!&8]&7 &f{0}&7 is not on faction land.'
+
+# Debug Mode
 DebugMode: False

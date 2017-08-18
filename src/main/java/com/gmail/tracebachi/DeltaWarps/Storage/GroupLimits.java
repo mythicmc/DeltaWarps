@@ -1,42 +1,43 @@
 /*
- * This file is part of DeltaWarps.
+ * DeltaWarps - Warping plugin for BungeeCord and Spigot servers
+ * Copyright (C) 2017 tracebachi@gmail.com (GeeItsZee)
  *
- * DeltaWarps is free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * DeltaWarps is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with DeltaWarps.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.gmail.tracebachi.DeltaWarps.Storage;
 
 /**
- * Created by Trace Bachi (tracebachi@gmail.com, BigBossZee) on 12/18/15.
+ * * @author GeeItsZee (tracebachi@gmail.com)
  */
 public class GroupLimits
 {
-    private final short normalLimit;
-    private final short factionLimit;
+  private final short normalWarpsLimit;
+  private final short factionWarpsLimit;
 
-    public GroupLimits(int normalLimit, int factionLimit)
-    {
-        this.normalLimit = (short) normalLimit;
-        this.factionLimit = (short) factionLimit;
-    }
+  public GroupLimits(int normalWarpsLimit, int factionWarpsLimit)
+  {
+    this.normalWarpsLimit = (short) normalWarpsLimit;
+    this.factionWarpsLimit = (short) factionWarpsLimit;
+  }
 
-    public short getNormal()
-    {
-        return normalLimit;
-    }
+  public short getNormalWarpsLimit()
+  {
+    return (short) Math.max(0, normalWarpsLimit);
+  }
 
-    public short getFaction()
-    {
-        return factionLimit;
-    }
+  public short getFactionWarpsLimit()
+  {
+    return (short) Math.max(0, factionWarpsLimit);
+  }
 }

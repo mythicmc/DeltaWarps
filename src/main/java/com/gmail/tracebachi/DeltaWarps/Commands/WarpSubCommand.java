@@ -15,29 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.gmail.tracebachi.DeltaWarps.Storage;
+package com.gmail.tracebachi.DeltaWarps.Commands;
+
+import org.bukkit.command.CommandSender;
+
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * * @author GeeItsZee (tracebachi@gmail.com)
  */
-public enum WarpType
+interface WarpSubCommand
 {
-  PUBLIC,
-  FACTION,
-  PRIVATE;
+  HashSet<String> RESERVED_NAMES = new HashSet<>(
+    Arrays.asList("add", "set", "remove", "delete", "move", "give", "info", "list"));
 
-  public static WarpType fromString(String type)
-  {
-    switch (type.toLowerCase())
-    {
-      case "faction":
-        return FACTION;
-      case "private":
-        return PRIVATE;
-      case "public":
-        return PUBLIC;
-      default:
-        return null;
-    }
-  }
+  void onCommand(CommandSender sender, String[] args);
 }

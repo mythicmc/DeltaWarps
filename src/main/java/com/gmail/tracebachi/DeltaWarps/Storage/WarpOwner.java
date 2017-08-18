@@ -18,26 +18,52 @@
 package com.gmail.tracebachi.DeltaWarps.Storage;
 
 /**
- * * @author GeeItsZee (tracebachi@gmail.com)
+ * @author GeeItsZee (tracebachi@gmail.com)
  */
-public enum WarpType
+public class WarpOwner
 {
-  PUBLIC,
-  FACTION,
-  PRIVATE;
+  private int id;
+  private String name;
+  private int extraNormalWarps;
+  private int extraFactionWarps;
 
-  public static WarpType fromString(String type)
+  public int getId()
   {
-    switch (type.toLowerCase())
-    {
-      case "faction":
-        return FACTION;
-      case "private":
-        return PRIVATE;
-      case "public":
-        return PUBLIC;
-      default:
-        return null;
-    }
+    return id;
+  }
+
+  public void setId(int id)
+  {
+    this.id = id;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+
+  public int getExtraNormalWarps()
+  {
+    return Math.max(0, extraNormalWarps);
+  }
+
+  public void setExtraNormalWarps(int extraNormalWarps)
+  {
+    this.extraNormalWarps = extraNormalWarps;
+  }
+
+  public int getExtraFactionWarps()
+  {
+    return Math.max(0, extraFactionWarps);
+  }
+
+  public void setExtraFactionWarps(int extraFactionWarps)
+  {
+    this.extraFactionWarps = extraFactionWarps;
   }
 }

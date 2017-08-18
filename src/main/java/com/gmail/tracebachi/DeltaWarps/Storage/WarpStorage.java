@@ -17,27 +17,37 @@
  */
 package com.gmail.tracebachi.DeltaWarps.Storage;
 
-/**
- * * @author GeeItsZee (tracebachi@gmail.com)
- */
-public enum WarpType
-{
-  PUBLIC,
-  FACTION,
-  PRIVATE;
+import java.util.List;
+import java.util.Map;
 
-  public static WarpType fromString(String type)
+/**
+ * @author GeeItsZee (tracebachi@gmail.com)
+ */
+public interface WarpStorage
+{
+  boolean createTable() throws Exception;
+
+  Warp getByName(String warpName);
+
+  Result add(Warp warp);
+
+  Result removeByName(String warpName);
+
+  Result update(Warp newWarp);
+
+  List<Warp> getByOwnerId(int ownerId);
+
+  Map<WarpType, Integer> getByOwnerIdGroupByType(int ownerId);
+
+  List<Warp> getPublicWarps(int limit, int offset);
+
+  List<Warp> getFactionWarps(String factionId, String serverName);
+
+  enum Result
   {
-    switch (type.toLowerCase())
-    {
-      case "faction":
-        return FACTION;
-      case "private":
-        return PRIVATE;
-      case "public":
-        return PUBLIC;
-      default:
-        return null;
-    }
+    SUCCESS,
+    WARP_NAME_EXISTS,
+    WARP_NOT_FOUND,
+    EXCEPTION
   }
 }
