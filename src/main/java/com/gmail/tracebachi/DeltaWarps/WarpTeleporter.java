@@ -82,7 +82,7 @@ public class WarpTeleporter implements Listener, Registerable
 
     api.getMessageNotifier().register(Channels.WARP, warpChannelListener);
 
-    cleanupFuture = api.getSchedulingExecutor().scheduleAtFixedRate(
+    cleanupFuture = api.getScheduledExecutorService().scheduleAtFixedRate(
       this::cleanupRequests, 10, 10, TimeUnit.SECONDS);
   }
 

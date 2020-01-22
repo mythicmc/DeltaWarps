@@ -26,7 +26,6 @@ import com.gmail.tracebachi.DeltaWarps.Storage.MySql.MySqlWarpStorage;
 import com.gmail.tracebachi.DeltaWarps.Storage.Warp;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpOwnerStorage;
 import com.gmail.tracebachi.DeltaWarps.Storage.WarpStorage;
-import com.gmail.tracebachi.SockExchange.Scheduler.SchedulingExecutor;
 import com.gmail.tracebachi.SockExchange.Spigot.SockExchangeApi;
 import com.gmail.tracebachi.SockExchange.Utilities.MessageFormatMap;
 import net.md_5.bungee.api.ChatColor;
@@ -42,6 +41,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * * @author GeeItsZee (tracebachi@gmail.com)
@@ -91,7 +91,7 @@ public class DeltaWarpsPlugin extends JavaPlugin
     }
 
     SockExchangeApi api = SockExchangeApi.instance();
-    SchedulingExecutor executor = api.getSchedulingExecutor();
+    ScheduledExecutorService executor = api.getScheduledExecutorService();
     String serverName = api.getServerName();
     boolean foundFactions = getServer().getPluginManager().getPlugin("Factions") != null;
 

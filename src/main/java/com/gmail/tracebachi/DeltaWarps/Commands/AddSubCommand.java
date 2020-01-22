@@ -153,7 +153,7 @@ public class AddSubCommand implements WarpSubCommand
       }
 
       // Check if the player is creating a faction warp on faction land
-      if (!mPlayer.getFactionId().equals(facAtPos.getId()))
+      if (!mPlayer.getFaction().getId().equals(facAtPos.getId()))
       {
         sender.sendMessage(formatMap.format(Formats.FACTION_WARP_ONLY_ON_FACTION_LAND));
         return;
