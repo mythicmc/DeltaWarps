@@ -1,6 +1,6 @@
 name: DeltaWarps
 main: com.gmail.tracebachi.DeltaWarps.DeltaWarpsPlugin
-version: ${project.version}
+version: 2.0.0
 author: GeeItsZee (tracebachi@gmail.com)
 depend: [SockExchange, DbShare, DeltaEssentials]
 soft-depend: [Factions]
