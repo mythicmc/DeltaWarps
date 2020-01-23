@@ -87,7 +87,7 @@ public class ServerWarpCommand implements CommandExecutor, Registerable
       return true;
     }
 
-    if (args.length < 1)
+    if (args.length != 1)
     {
       sender.sendMessage(formatMap.format(Formats.USAGE, COMMAND_USAGE));
       return true;
@@ -101,7 +101,7 @@ public class ServerWarpCommand implements CommandExecutor, Registerable
       return true;
     }
 
-    String warpName = args[1].toLowerCase();
+    String warpName = args[0].toLowerCase();
 
     if (WarpSubCommand.RESERVED_NAMES.contains(warpName))
     {
