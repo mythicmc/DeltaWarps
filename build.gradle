@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.gmail.tracebachi'
-version '2.1.0'
+version '2.1.1'
 
 description = "Cross-server warping plugin for BungeeCord and Spigot servers."
 
