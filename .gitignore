@@ -1,7 +1,6 @@
 build/
 .gradle/
-.idea/workspace.xml
-.idea/uiDesigner.xml
+.idea/
 
 # Compiled class file
 *.class
